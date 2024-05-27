@@ -6,8 +6,60 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    120.3529,
-                    22.2654
+                    120.5913889,
+                    22.44833333
+                ]
+            },
+            "properties": {
+                "radius": 9260
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    119.3425,
+                    23.305
+                ]
+            },
+            "properties": {
+                "radius": 4815.2
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    121.6080556,
+                    21.94805556
+                ]
+            },
+            "properties": {
+                "radius": 1600
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    121.0080556,
+                    22.59833333
+                ]
+            },
+            "properties": {
+                "radius": 9260
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    120.6680556,
+                    21.95
                 ]
             },
             "properties": {
@@ -19,8 +71,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    119.2033,
-                    23.1818
+                    121.5013889,
+                    25.28333333
                 ]
             },
             "properties": {
@@ -32,8 +84,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    121.3629,
-                    21.5653
+                    121.5025,
+                    25.2
                 ]
             },
             "properties": {
@@ -45,73 +97,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    121.0029,
-                    22.3554
-                ]
-            },
-            "properties": {
-                "radius": 3704
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    120.45,
-                    21.57
-                ]
-            },
-            "properties": {
-                "radius": 3704
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    121.35,
-                    25.17
-                ]
-            },
-            "properties": {
-                "radius": 3704
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    121.39,
-                    25.12
-                ]
-            },
-            "properties": {
-                "radius": 3704
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    12155,
-                    2502
-                ]
-            },
-            "properties": {
-                "radius": 3704
-            }
-        },
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    121.0417,
-                    24.2953
+                    121.0713889,
+                    24.49805556
                 ]
             },
             "properties": {
@@ -123,26 +110,28 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    116.43,
-                    20.42
+                    116.6675,
+                    20.7
                 ]
             },
             "properties": {
-                "radius": 3704
-            }
+                "radius": 18520
+            },
+            "name": "東沙群島"
         },
         {
             "type": "Feature",
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    114.23,
-                    10.23
+                    114.3341667,
+                    10.38333333
                 ]
             },
             "properties": {
-                "radius": 3704
-            }
+                "radius": 18520
+            },
+            "name": "南沙群島"
         }
     ]
 }

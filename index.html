@@ -18,13 +18,15 @@
 <script src="https://cdn.bootcss.com/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
 <script type="text/javascript" src='./leaflet.ChineseTmsProviders.js'></script>
 <script>
-    const map = L.map('map').setView([23.4037, 121.0794], 6);
+    const map = L.map('map').setView([22, 120], 6);
 
     /*
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
     }).addTo(map);
+    */
 
+    /*
     L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {
         maxZoom: 18,
         minZoom: 5
@@ -37,7 +39,6 @@
 
     L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 20,
-        attribution: 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
     }).addTo(map);
 
     // Load GeoJSON data

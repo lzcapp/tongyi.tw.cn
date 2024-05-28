@@ -82,6 +82,7 @@
             }).addTo(map);
         });
 
+
     fetch('medianline.geojson')
         .then(response => response.json())
         .then(data => {
@@ -114,6 +115,23 @@
             }).addTo(map);
         });
 
+    fetch('adiz_p.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: function () {
+                    return {
+                        color: '#9EFF3D',
+                        weight: 1.5,
+                        opacity: 0.8,
+                        dashArray: '12',
+                        fillColor: '#FFFFFF',
+                        fillOpacity: 0
+                    };
+                }
+            }).addTo(map);
+        });
+
     fetch('adiz.geojson')
         .then(response => response.json())
         .then(data => {
@@ -131,7 +149,7 @@
             }).addTo(map);
         });
 
-    fetch('ecsadiz.geojson')
+    fetch('adiz_c.geojson')
         .then(response => response.json())
         .then(data => {
             L.geoJSON(data, {
@@ -350,6 +368,11 @@
             type: "circle",
             radius: 6,
             fillColor: "#3DFF3D",
+        }, {
+            label: "菲方单方面划设的“防空识别区”",
+            type: "circle",
+            radius: 6,
+            fillColor: "#9EFF3D",
         }, {
             label: "1996年台海军事演习",
             type: "circle",

@@ -5,6 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>统一，台湾！</title>
     <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
+    <link href="./src/leaflet.legend.css" rel="stylesheet" />
     <style>
         #map {
             height: 98dvh;
@@ -17,7 +18,6 @@
 <script src="https://cdn.bootcss.com/proj4js/2.4.3/proj4.js"></script>
 <script src="https://cdn.bootcss.com/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
 <script type="text/javascript" src='./src/leaflet.ChineseTmsProviders.js'></script>
-<link rel="stylesheet" href="./src/leaflet.legend.css" />
 <script type="text/javascript" src='./src/leaflet.legend.js'></script>
 <script>
     const map = L.map('map', {attributionControl: false}).setView([24, 120.9], 6);
@@ -277,6 +277,16 @@
             type: "circle",
             radius: 6,
             fillColor: "#BEFF33",
+        }, {
+            label: "2022环台军事演习",
+            type: "circle",
+            radius: 6,
+            fillColor: "#FF5757",
+        }, {
+            label: "联合利剑——2024A",
+            type: "circle",
+            radius: 6,
+            fillColor: "#FF3D3D",
         }]
     }).addTo(map);
 </script>

@@ -222,6 +222,22 @@
             }).addTo(map);
         });
 
+    fetch('1996.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: function () {
+                    return {
+                        color: '#FF7171',
+                        weight: 1,
+                        opacity: 0.4,
+                        fillColor: '#FF7171',
+                        fillOpacity: 0.4
+                    };
+                }
+            }).addTo(map);
+        });
+
     fetch('2022.geojson')
         .then(response => response.json())
         .then(data => {
@@ -244,10 +260,10 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FF3D3D',
+                        color: '#FF3E3E',
                         weight: 1,
                         opacity: 0.4,
-                        fillColor: '#FF3D3D',
+                        fillColor: '#FF3E3E',
                         fillOpacity: 0.4
                     };
                 }
@@ -278,6 +294,11 @@
             radius: 6,
             fillColor: "#BEFF33",
         }, {
+            label: "1996台海军事演习",
+            type: "circle",
+            radius: 6,
+            fillColor: "#FF7171",
+        }, {
             label: "2022环台军事演习",
             type: "circle",
             radius: 6,
@@ -286,7 +307,7 @@
             label: "联合利剑——2024A",
             type: "circle",
             radius: 6,
-            fillColor: "#FF3D3D",
+            fillColor: "#FF3E3E",
         }]
     }).addTo(map);
 </script>

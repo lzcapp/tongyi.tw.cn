@@ -228,10 +228,10 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FF7171',
+                        color: '#FF6E3D',
                         weight: 1,
                         opacity: 0.4,
-                        fillColor: '#FF7171',
+                        fillColor: '#FF6E3D',
                         fillOpacity: 0.4
                     };
                 }
@@ -244,10 +244,26 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FF5757',
+                        color: '#FF5D3D',
                         weight: 1,
                         opacity: 0.4,
-                        fillColor: '#FF5757',
+                        fillColor: '#FF5D3D',
+                        fillOpacity: 0.4
+                    };
+                }
+            }).addTo(map);
+        });
+
+    fetch('2023.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: function () {
+                    return {
+                        color: '#FF4D3D',
+                        weight: 1,
+                        opacity: 0.4,
+                        fillColor: '#FF4D3D',
                         fillOpacity: 0.4
                     };
                 }
@@ -260,10 +276,10 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FF3E3E',
+                        color: '#FF3D3D',
                         weight: 1,
                         opacity: 0.4,
-                        fillColor: '#FF3E3E',
+                        fillColor: '#FF3D3D',
                         fillOpacity: 0.4
                     };
                 }
@@ -294,20 +310,25 @@
             radius: 6,
             fillColor: "#BEFF33",
         }, {
-            label: "1996台海军事演习",
+            label: "1996年台海军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#FF7171",
+            fillColor: "#FF6E3D",
         }, {
-            label: "2022环台军事演习",
+            label: "2022年环台军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#FF5757",
+            fillColor: "#FF5D3D",
+        }, {
+            label: "2023年环台军事演练",
+            type: "circle",
+            radius: 6,
+            fillColor: "#FF4D3D",
         }, {
             label: "联合利剑——2024A",
             type: "circle",
             radius: 6,
-            fillColor: "#FF3E3E",
+            fillColor: "#FF3D3D",
         }]
     }).addTo(map);
 </script>

@@ -16,7 +16,9 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.bootcss.com/proj4js/2.4.3/proj4.js"></script>
 <script src="https://cdn.bootcss.com/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
-<script type="text/javascript" src='./leaflet.ChineseTmsProviders.js'></script>
+<script type="text/javascript" src='./src/leaflet.ChineseTmsProviders.js'></script>
+<link rel="stylesheet" href="./src/leaflet.legend.css" />
+<script type="text/javascript" src='./src/leaflet.legend.js'></script>
 <script>
     const map = L.map('map', {attributionControl: false}).setView([24, 120.9], 6);
 
@@ -52,7 +54,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3358ff',
+                        color: '#3358FF',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
@@ -69,7 +71,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3358ff',
+                        color: '#3358FF',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12'
@@ -101,7 +103,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3358ff',
+                        color: '#3358FF',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
@@ -251,6 +253,32 @@
                 }
             }).addTo(map);
         });
+
+    L.control.Legend({
+        position: "bottomright",
+        title: "图例",
+        legends: [{
+            label: "我方领海基线、防空识别区",
+            type: "circle",
+            radius: 6,
+            fillColor: "#FF3358",
+        }, {
+            label: "台伪政府单方面宣称的“海峡中线”、“领海基线”及“防空识别区”",
+            type: "circle",
+            radius: 6,
+            fillColor: "#3358FF",
+        }, {
+            label: "台伪政府划设禁限制区域",
+            type: "circle",
+            radius: 6,
+            fillColor: "#33BEFF",
+        }, {
+            label: "日寇单方面宣称的“防空识别区”",
+            type: "circle",
+            radius: 6,
+            fillColor: "#BEFF33",
+        }]
+    }).addTo(map);
 </script>
 </body>
 </html>

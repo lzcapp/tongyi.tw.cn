@@ -4,4 +4,4 @@
 
 ## Screenshot
 
-![Pixel 7](https://github.com/lzcapp/tongyi.tw.cn/assets/12462465/7dfb7ecf-4e1f-4b1e-9171-a56a7252f6d0)
+![Screenshot](https://github.com/lzcapp/tongyi.tw.cn/assets/12462465/44f2dd68-33c8-4fef-831d-c940d94ff85a)

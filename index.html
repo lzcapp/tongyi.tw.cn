@@ -61,7 +61,10 @@
         // Add any overlay layers if needed
     };
 
-    L.control.layers(baseLayers, overlayLayers).addTo(map);
+    const defaultBaseLayer = AutoNavi;
+
+    L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+    map.addLayer(defaultBaseLayer);
 
     // Load GeoJSON data
     fetch('./geojson/tw.geojson')

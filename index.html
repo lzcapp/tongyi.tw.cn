@@ -95,7 +95,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3D3DFF',
+                        color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
@@ -111,7 +111,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3D3DFF',
+                        color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
@@ -128,7 +128,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3D3DFF',
+                        color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12'
@@ -143,7 +143,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3DFF3D',
+                        color: '#FFD880',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
@@ -159,7 +159,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#9EFF3D',
+                        color: '#F29A35',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
@@ -175,7 +175,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#3D3DFF',
+                        color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
@@ -192,7 +192,7 @@
                 pointToLayer: function (feature, latlng) {
                     return L.circle(latlng, {
                         radius: feature.properties.radius,
-                        color: '#3DFF3D',
+                        color: '#FFD880',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
@@ -208,7 +208,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FF3358',
+                        color: '#c0392b',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
@@ -224,7 +224,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FF3358',
+                        color: '#c0392b',
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
@@ -234,21 +234,21 @@
             }).addTo(map);
         });
 
-    fetch('./geojson/road.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#FF8100',
-                        weight: 3,
-                        opacity: 0.8,
-                        dashArray: '10, 10, 2, 10',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
+    // fetch('./geojson/road.geojson')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         L.geoJSON(data, {
+    //             style: function () {
+    //                 return {
+    //                     color: '#FF8100',
+    //                     weight: 3,
+    //                     opacity: 0.6,
+    //                     dashArray: '10, 10, 2, 10',
+    //                     fill: false
+    //                 };
+    //             }
+    //         }).addTo(map);
+    //     });
 
     fetch('./geojson/rcr.geojson')
         .then(response => response.json())
@@ -257,23 +257,8 @@
                 style: function () {
                     return {
                         stroke: false,
-                        fillColor: '#3D6EFF',
-                        fillOpacity: 0.4,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/rcr_m.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#3D9FFF',
-                        fillOpacity: 0.4,
+                        fillColor: '#057DCD',
+                        fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     };
                 }
@@ -288,8 +273,8 @@
                     return L.circle(latlng, {
                         radius: feature.properties.radius,
                         stroke: false,
-                        fillColor: '#3D6EFF',
-                        fillOpacity: 0.4,
+                        fillColor: '#057DCD',
+                        fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     });
                 }
@@ -303,14 +288,29 @@
                 pointToLayer: function (feature, latlng) {
                     return L.circle(latlng, {
                         radius: feature.properties.radius,
-                        color: '#3D6EFF',
+                        color: '#057DCD',
                         weight: 1,
                         opacity: 0.4,
                         dashArray: '10',
-                        fillColor: '#3D6EFF',
-                        fillOpacity: 0.4,
+                        fillColor: '#057DCD',
+                        fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     });
+                }
+            }).addTo(map);
+        });
+
+    fetch('./geojson/rcr_m.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: function () {
+                    return {
+                        stroke: false,
+                        fillColor: '#43B0F1',
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
+                    };
                 }
             }).addTo(map);
         });
@@ -321,9 +321,9 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        stroke: 0,
-                        fillColor: '#FF6E3D',
-                        fillOpacity: 0.4
+                        stroke: false,
+                        fillColor: '#FFBAB5',
+                        fillOpacity: 0.5
                     };
                 }
             }).addTo(map);
@@ -335,9 +335,9 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        stroke: 0,
-                        fillColor: '#FF5D3D',
-                        fillOpacity: 0.4
+                        stroke: false,
+                        fillColor: '#F97D6D',
+                        fillOpacity: 0.5
                     };
                 }
             }).addTo(map);
@@ -349,9 +349,9 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        stroke: 0,
-                        fillColor: '#FF4D3D',
-                        fillOpacity: 0.4
+                        stroke: false,
+                        fillColor: '#F01819',
+                        fillOpacity: 0.5
                     };
                 }
             }).addTo(map);
@@ -363,9 +363,9 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        stroke: 0,
+                        stroke: false,
                         fillColor: '#FF3D3D',
-                        fillOpacity: 0.4
+                        fillOpacity: 0.5
                     };
                 }
             }).addTo(map);
@@ -379,47 +379,47 @@
             label: "我方领海基线、防空识别区",
             type: "circle",
             radius: 6,
-            fillColor: "#FF3358",
+            fillColor: "#c0392b",
         }, {
             label: "台当局单方面划设的\r\n“海峡中线”、“领海基线”\r\n及“防空识别区”",
             type: "circle",
             radius: 6,
-            fillColor: "#3D3DFF",
+            fillColor: "#1E3D58",
         }, {
             label: "台当局划设的禁止、限制空域",
             type: "circle",
             radius: 6,
-            fillColor: "#3D6EFF",
+            fillColor: "#057DCD",
         }, {
             label: "台当局划设的军事演训区域",
             type: "circle",
             radius: 6,
-            fillColor: "#3D9FFF",
+            fillColor: "#43B0F1",
         }, {
             label: "日方单方面划设的“防空识别区”",
             type: "circle",
             radius: 6,
-            fillColor: "#3DFF3D",
+            fillColor: "#FFD880",
         }, {
             label: "菲方单方面划设的“防空识别区”",
             type: "circle",
             radius: 6,
-            fillColor: "#9EFF3D",
+            fillColor: "#F29A35",
         }, {
             label: "1996年台海军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#FF6E3D",
+            fillColor: "#FFBAB5",
         }, {
             label: "2022年环台军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#FF5D3D",
+            fillColor: "#F97D6D",
         }, {
             label: "2023年环台军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#FF4D3D",
+            fillColor: "#F01819",
         }, {
             label: "联合利剑——2024A",
             type: "circle",

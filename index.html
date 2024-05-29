@@ -60,11 +60,6 @@
     const OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
     });
-    const Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
-        minZoom: 0,
-        maxZoom: 20,
-        ext: 'jpg'
-    });
     const CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
         maxZoom: 20
@@ -75,7 +70,6 @@
         "高德卫星地图": AutoNavi_S,
         "MapTiles OSM": MapTilesAPI_OSMEnglish,
         "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
-        "Alidade Satellite": Stadia_AlidadeSatellite,
         "CartoDB DarkMatter": CartoDB_DarkMatter
     };
 
@@ -87,6 +81,29 @@
 
     L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
     map.addLayer(defaultBaseLayer);
+
+    L.control.scale({
+        position:'topleft',
+        maxWidth:'100',
+        imperial:false
+    }).addTo(map);
+
+    var attribution = L.control.attribution().addTo(map);
+
+    function updateCoordinates(e) {
+        var lat, lng;
+        if (e.latlng) {
+            lat = e.latlng.lat.toFixed(4);
+            lng = e.latlng.lng.toFixed(4);
+        } else if (e.touches) {
+            lat = map.mouseEventToLatLng(e.touches[0].clientX, e.touches[0].clientY).lat.toFixed(4);
+            lng = map.mouseEventToLatLng(e.touches[0].clientX, e.touches[0].clientY).lng.toFixed(4);
+        }
+        attribution.setPrefix(lat + ', ' + lng);
+    }
+
+    map.on('mousemove', updateCoordinates);
+    map.on('touchmove', updateCoordinates);
 
     // Load GeoJSON data
     fetch('./geojson/tw.geojson')

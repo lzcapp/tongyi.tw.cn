@@ -149,6 +149,24 @@
             }).addTo(map);
         });
 
+    fetch('./geojson/adiz_p_j.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circle(latlng, {
+                        radius: feature.properties.radius,
+                        color: '#3DFF3D',
+                        weight: 1.5,
+                        opacity: 0.8,
+                        dashArray: '10',
+                        fillColor: '#FFFFFF',
+                        fillOpacity: 0
+                    });
+                }
+            }).addTo(map);
+        });
+
     fetch('./geojson/adiz_c.geojson')
         .then(response => response.json())
         .then(data => {
@@ -183,20 +201,19 @@
             }).addTo(map);
         });
 
-    fetch('./geojson/adiz_p_j.geojson')
+    fetch('./geojson/road.geojson')
         .then(response => response.json())
         .then(data => {
             L.geoJSON(data, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circle(latlng, {
-                        radius: feature.properties.radius,
-                        color: '#3DFF3D',
-                        weight: 1.5,
+                style: function () {
+                    return {
+                        color: '#FF8100',
+                        weight: 3,
                         opacity: 0.8,
-                        dashArray: '10',
+                        dashArray: '10, 10, 2, 10',
                         fillColor: '#FFFFFF',
                         fillOpacity: 0
-                    });
+                    };
                 }
             }).addTo(map);
         });

@@ -45,16 +45,38 @@
     }).addTo(map);
     */
 
-    const AutoNavi = L.tileLayer('http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {subdomains: "1234"});
-
+    //const AutoNavi = L.tileLayer('http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {subdomains: "1234"});
+    const AutoNavi = L.tileLayer.chinaProvider('GaoDe.Normal.Map');
+    const AutoNavi_S = L.layerGroup(
+        [
+            L.tileLayer.chinaProvider('GaoDe.Satellite.Map'),
+            L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion')
+        ]
+    );
     const MapTilesAPI_OSMEnglish = L.tileLayer('https://maptiles.p.rapidapi.com/en/map/v1/{z}/{x}/{y}.png?rapidapi-key={apikey}', {
         apikey: '73e4d2d955msh4ac8381a3a4da28p135d2ajsn34e2fffd2605',
         maxZoom: 19
     });
+    const OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    });
+    const Stadia_AlidadeSatellite = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.{ext}', {
+        minZoom: 0,
+        maxZoom: 20,
+        ext: 'jpg'
+    });
+    const CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 20
+    });
 
     const baseLayers = {
-        "AutoNavi": AutoNavi,
-        "MapTiles API (OSM English)": MapTilesAPI_OSMEnglish
+        "高德地图": AutoNavi,
+        "高德卫星地图": AutoNavi_S,
+        "MapTiles OSM": MapTilesAPI_OSMEnglish,
+        "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
+        "Alidade Satellite": Stadia_AlidadeSatellite,
+        "CartoDB DarkMatter": CartoDB_DarkMatter
     };
 
     const overlayLayers = {

@@ -41,7 +41,8 @@
             return canvas;
         }
 
-        _drawSymbol() {}
+        _drawSymbol() {
+        }
 
         _style() {
             var ctx = (this._ctx = this._canvas.getContext("2d"));
@@ -64,9 +65,11 @@
             }
         }
 
-        rescale() {}
+        rescale() {
+        }
 
-        center() {}
+        center() {
+        }
     }
 
     class CircleSymbol extends GeometricSymbol {

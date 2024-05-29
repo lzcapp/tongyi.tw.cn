@@ -18,7 +18,7 @@ if (L.Proj) {
 
 L.TileLayer.ChinaProvider = L.TileLayer.extend({
 
-    initialize: function(type, options) { // (type, Object)
+    initialize: function (type, options) { // (type, Object)
         var providers = L.TileLayer.ChinaProvider.providers;
 
         options = options || {}
@@ -41,25 +41,25 @@ L.TileLayer.ChinaProvider = L.TileLayer.extend({
     },
 
     getTileUrl: function (coords) {
-		var data = {
-			s: this._getSubdomain(coords),
-			x: coords.x,
-			y: coords.y,
-			z: this._getZoomForUrl(),
-		};
-		if (this._map && !this._map.options.crs.infinite) {
-			var invertedY = this._globalTileRange.max.y - coords.y;
-			if (this.options.tms) {
-				data['y'] = invertedY;
-			}
-			data['-y'] = invertedY;
-		}
+        var data = {
+            s: this._getSubdomain(coords),
+            x: coords.x,
+            y: coords.y,
+            z: this._getZoomForUrl(),
+        };
+        if (this._map && !this._map.options.crs.infinite) {
+            var invertedY = this._globalTileRange.max.y - coords.y;
+            if (this.options.tms) {
+                data['y'] = invertedY;
+            }
+            data['-y'] = invertedY;
+        }
 
         data.sx = data.x >> 4
-        data.sy = (( 1 << data.z) - data.y) >> 4
+        data.sy = ((1 << data.z) - data.y) >> 4
 
-		return L.Util.template(this._url, L.Util.extend(data, this.options));
-	},
+        return L.Util.template(this._url, L.Util.extend(data, this.options));
+    },
 });
 
 L.TileLayer.ChinaProvider.providers = {
@@ -149,6 +149,6 @@ L.TileLayer.ChinaProvider.providers = {
 
 };
 
-L.tileLayer.chinaProvider = function(type, options) {
+L.tileLayer.chinaProvider = function (type, options) {
     return new L.TileLayer.ChinaProvider(type, options);
 };

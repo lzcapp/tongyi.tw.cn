@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>统一，台湾！</title>
     <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
-    <link href="./src/leaflet.legend.css" rel="stylesheet" />
+    <link href="./src/leaflet.legend.css" rel="stylesheet"/>
     <style>
         #map {
             height: 98dvh;
@@ -17,8 +17,8 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.bootcss.com/proj4js/2.4.3/proj4.js"></script>
 <script src="https://cdn.bootcss.com/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
-<script type="text/javascript" src='./src/leaflet.ChineseTmsProviders.js'></script>
-<script type="text/javascript" src='./src/leaflet.legend.js'></script>
+<script src='./src/leaflet.ChineseTmsProviders.js' type="text/javascript"></script>
+<script src='./src/leaflet.legend.js' type="text/javascript"></script>
 <script>
     const map = L.map('map', {attributionControl: false}).setView([24, 120.9], 6);
 
@@ -79,13 +79,13 @@
 
     const defaultBaseLayer = AutoNavi;
 
-    L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+    L.control.layers(baseLayers, overlayLayers, {collapsed: true}).addTo(map);
     map.addLayer(defaultBaseLayer);
 
     L.control.scale({
-        position:'topleft',
-        maxWidth:'100',
-        imperial:false
+        position: 'bottomleft',
+        maxWidth: '100',
+        imperial: false
     }).addTo(map);
 
     // Load GeoJSON data

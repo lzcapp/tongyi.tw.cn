@@ -98,7 +98,7 @@
                         color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '10',
+                        dashArray: '10, 10, 2, 10',
                         fill: false
                     };
                 }
@@ -114,7 +114,7 @@
                         color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '10',
+                        dashArray: '10, 10, 2, 10',
                         fill: false
                     };
                 }
@@ -131,7 +131,7 @@
                         color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '12'
+                        dashArray: '10, 0, 0, 30'
                     };
                 }
             }).addTo(map);
@@ -146,7 +146,7 @@
                         color: '#FFD880',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '12',
+                        dashArray: '10, 0, 0, 30',
                         fill: false
                     };
                 }
@@ -162,7 +162,7 @@
                         color: '#F29A35',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '12',
+                        dashArray: '10, 0, 0, 30',
                         fill: false
                     };
                 }
@@ -178,7 +178,7 @@
                         color: '#1E3D58',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '12',
+                        dashArray: '10, 0, 0, 30',
                         fill: false
                     };
                 }
@@ -195,7 +195,7 @@
                         color: '#FFD880',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '10',
+                        dashArray: '10, 0, 0, 30',
                         fill: false
                     });
                 }
@@ -211,7 +211,7 @@
                         color: '#c0392b',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '12',
+                        dashArray: '10, 0, 0, 30',
                         fill: false
                     };
                 }
@@ -227,7 +227,7 @@
                         color: '#c0392b',
                         weight: 1.5,
                         opacity: 0.8,
-                        dashArray: '10',
+                        dashArray: '10, 10, 2, 10',
                         fill: false
                     };
                 }
@@ -323,7 +323,8 @@
                     return {
                         stroke: false,
                         fillColor: '#FFBAB5',
-                        fillOpacity: 0.5
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
                     };
                 }
             }).addTo(map);
@@ -337,7 +338,8 @@
                     return {
                         stroke: false,
                         fillColor: '#F97D6D',
-                        fillOpacity: 0.5
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
                     };
                 }
             }).addTo(map);
@@ -351,7 +353,8 @@
                     return {
                         stroke: false,
                         fillColor: '#F01819',
-                        fillOpacity: 0.5
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
                     };
                 }
             }).addTo(map);
@@ -365,7 +368,8 @@
                     return {
                         stroke: false,
                         fillColor: '#FF3D3D',
-                        fillOpacity: 0.5
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
                     };
                 }
             }).addTo(map);

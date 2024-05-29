@@ -88,23 +88,6 @@
         imperial:false
     }).addTo(map);
 
-    var attribution = L.control.attribution().addTo(map);
-
-    function updateCoordinates(e) {
-        var lat, lng;
-        if (e.latlng) {
-            lat = e.latlng.lat.toFixed(4);
-            lng = e.latlng.lng.toFixed(4);
-        } else if (e.touches) {
-            lat = map.mouseEventToLatLng(e.touches[0].clientX, e.touches[0].clientY).lat.toFixed(4);
-            lng = map.mouseEventToLatLng(e.touches[0].clientX, e.touches[0].clientY).lng.toFixed(4);
-        }
-        attribution.setPrefix(lat + ', ' + lng);
-    }
-
-    map.on('mousemove', updateCoordinates);
-    map.on('touchmove', updateCoordinates);
-
     // Load GeoJSON data
     fetch('./geojson/tw.geojson')
         .then(response => response.json())

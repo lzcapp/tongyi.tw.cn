@@ -99,8 +99,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -116,8 +115,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -149,8 +147,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -166,8 +163,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -183,8 +179,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -201,8 +196,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     });
                 }
             }).addTo(map);
@@ -218,8 +212,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '12',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -235,8 +228,7 @@
                         weight: 1.5,
                         opacity: 0.8,
                         dashArray: '10',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -252,8 +244,7 @@
                         weight: 3,
                         opacity: 0.8,
                         dashArray: '10, 10, 2, 10',
-                        fillColor: '#FFFFFF',
-                        fillOpacity: 0
+                        fill: false
                     };
                 }
             }).addTo(map);
@@ -265,10 +256,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FFFFFF',
-                        weight: 0,
-                        opacity: 0,
-                        dashArray: '10',
+                        stroke: false,
                         fillColor: '#3D6EFF',
                         fillOpacity: 0.4,
                         fillRule: 'nonzero'
@@ -283,10 +271,7 @@
             L.geoJSON(data, {
                 style: function () {
                     return {
-                        color: '#FFFFFF',
-                        weight: 0,
-                        opacity: 0,
-                        dashArray: '10',
+                        stroke: false,
                         fillColor: '#3D9FFF',
                         fillOpacity: 0.4,
                         fillRule: 'nonzero'
@@ -302,10 +287,7 @@
                 pointToLayer: function (feature, latlng) {
                     return L.circle(latlng, {
                         radius: feature.properties.radius,
-                        color: '#FFFFFF',
-                        weight: 0,
-                        opacity: 0,
-                        dashArray: '10',
+                        stroke: false,
                         fillColor: '#3D6EFF',
                         fillOpacity: 0.4,
                         fillRule: 'nonzero'

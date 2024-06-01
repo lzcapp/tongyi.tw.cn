@@ -330,6 +330,22 @@
             }).addTo(map);
         });
 
+    fetch('./geojson/1996_p.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circle(latlng, {
+                        radius: feature.properties.radius,
+                        stroke: false,
+                        fillColor: '#FFBAB5',
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
+                    });
+                }
+            }).addTo(map);
+        });
+
     fetch('./geojson/2022.geojson')
         .then(response => response.json())
         .then(data => {

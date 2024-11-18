@@ -322,7 +322,7 @@
                 style: function () {
                     return {
                         stroke: false,
-                        fillColor: '#FFBAB5',
+                        fillColor: '#f7b267',
                         fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     };
@@ -338,7 +338,7 @@
                     return L.circle(latlng, {
                         radius: feature.properties.radius,
                         stroke: false,
-                        fillColor: '#FFBAB5',
+                        fillColor: '#f7b267',
                         fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     });
@@ -353,7 +353,7 @@
                 style: function () {
                     return {
                         stroke: false,
-                        fillColor: '#F97D6D',
+                        fillColor: '#f79d65',
                         fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     };
@@ -368,7 +368,7 @@
                 style: function () {
                     return {
                         stroke: false,
-                        fillColor: '#F01819',
+                        fillColor: '#f4845f',
                         fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     };
@@ -383,7 +383,22 @@
                 style: function () {
                     return {
                         stroke: false,
-                        fillColor: '#FF3D3D',
+                        fillColor: '#f27059',
+                        fillOpacity: 0.5,
+                        fillRule: 'nonzero'
+                    };
+                }
+            }).addTo(map);
+        });
+
+    fetch('./geojson/2024B.geojson')
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: function () {
+                    return {
+                        stroke: false,
+                        fillColor: '#f25c54',
                         fillOpacity: 0.5,
                         fillRule: 'nonzero'
                     };
@@ -429,22 +444,27 @@
             label: "1996年台海军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#FFBAB5",
+            fillColor: "#f7b267",
         }, {
             label: "2022年环台军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#F97D6D",
+            fillColor: "#f79d65",
         }, {
             label: "2023年环台军事演习",
             type: "circle",
             radius: 6,
-            fillColor: "#F01819",
+            fillColor: "#f4845f",
         }, {
             label: "联合利剑——2024A",
             type: "circle",
             radius: 6,
-            fillColor: "#FF3D3D",
+            fillColor: "#f27059",
+        }, {
+            label: "联合利剑——2024B",
+            type: "circle",
+            radius: 6,
+            fillColor: "#f25c54",
         }]
     }).addTo(map);
 </script>

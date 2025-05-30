@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -7,46 +7,93 @@
     <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
     <link href="./src/leaflet.legend.css" rel="stylesheet"/>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
         #map {
-            height: 98dvh;
+            height: 100dvh; /* 使用 100dvh 使地图占满整个视口高度 */
+            width: 100vw;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            max-width: 250px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-panel h4 {
+            margin-top: 0;
+        }
+
+        .api-key-warning {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
+
 <div id="map"></div>
+<div id="infoPanel" class="info-panel" style="display: none;">
+    <h4>加载信息</h4>
+    <p id="loadingStatus"></p>
+    <ul id="errorMessages" style="list-style-type: none; padding-left: 0;"></ul>
+    <p class="api-key-warning" id="apiKeyWarning" style="display:none;">警告: MapTilesAPI 密钥未配置或直接暴露在前端。请使用后端代理保护您的
+        API 密钥！</p>
+</div>
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdn.bootcss.com/proj4js/2.4.3/proj4.js"></script>
-<script src="https://cdn.bootcss.com/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/proj4js/2.4.3/proj4.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
 <script src='./src/leaflet.ChineseTmsProviders.js' type="text/javascript"></script>
+<script src='./src/leaflet.mapCorrection.min.js' type="text/javascript"></script>
 <script src='./src/leaflet.legend.js' type="text/javascript"></script>
+
 <script>
-    const map = L.map('map', {attributionControl: false}).setView([24, 120.9], 6);
+    // Initialize map
+    const map = L.map('map', {
+        attributionControl: false, // 考虑是否真的需要禁用，许多瓦片服务要求显示归属信息
+    }).setView([24, 120.9], 6);
 
-    /*
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-    }).addTo(map);
-    */
+    // --- UI Elements for feedback ---
+    const loadingStatusEl = document.getElementById('loadingStatus');
+    const errorMessagesEl = document.getElementById('errorMessages');
+    const infoPanelEl = document.getElementById('infoPanel');
+    const apiKeyWarningEl = document.getElementById('apiKeyWarning');
 
-    /*
-    L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 20,
-    }).addTo(map);
-    */
+    function showInfoPanel() {
+        if (infoPanelEl) infoPanelEl.style.display = 'block';
+    }
 
-    /*
-    L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {
-        maxZoom: 18,
-        minZoom: 5
-    }).addTo(map);
-    L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {
-        maxZoom: 18,
-        minZoom: 5
-    }).addTo(map);
-    */
+    function updateLoadingStatus(message) {
+        if (loadingStatusEl) loadingStatusEl.textContent = message;
+        showInfoPanel();
+    }
 
-    //const AutoNavi = L.tileLayer('http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {subdomains: "1234"});
-    const AutoNavi = L.tileLayer.chinaProvider('GaoDe.Normal.Map');
+    function addErrorMessage(message) {
+        if (errorMessagesEl) {
+            const li = document.createElement('li');
+            li.style.color = 'red';
+            li.textContent = message;
+            errorMessagesEl.appendChild(li);
+        }
+        showInfoPanel();
+    }
+
+    // --- Base Layers Definition ---
+    const AutoNavi = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
+        // GaoDe maps require attribution. Check their terms.
+        // attribution: '高德地图' // Example
+    });
     const AutoNavi_S = L.layerGroup(
         [
             L.tileLayer.chinaProvider('GaoDe.Satellite.Map'),
@@ -58,414 +105,224 @@
         maxZoom: 19
     });
     const OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
     const CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
-        maxZoom: 20
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
     });
 
     const baseLayers = {
+        "OpenStreetMap": OpenStreetMap_Mapnik, // Renamed for clarity,
+        "MapTiles OSM": MapTilesAPI_OSMEnglish,
         "高德地图": AutoNavi,
         "高德卫星地图": AutoNavi_S,
-        "MapTiles OSM": MapTilesAPI_OSMEnglish,
-        "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
         "CartoDB DarkMatter": CartoDB_DarkMatter
     };
 
     const overlayLayers = {
-        // Add any overlay layers if needed
+        // Overlay layers can be added here if needed, or managed dynamically
     };
 
-    const defaultBaseLayer = AutoNavi;
-
+    map.addLayer(OpenStreetMap_Mapnik);
     L.control.layers(baseLayers, overlayLayers, {collapsed: true}).addTo(map);
-    map.addLayer(defaultBaseLayer);
+    L.control.scale({position: 'bottomleft', maxWidth: 100, imperial: false}).addTo(map);
 
-    L.control.scale({
-        position: 'bottomleft',
-        maxWidth: '100',
-        imperial: false
-    }).addTo(map);
+    // --- Reusable Styles for GeoJSON ---
+    const styleLineDefault = {color: '#1E3D58', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false};
+    const styleLineMedian = {color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
+    const styleLineADIZ_J = {color: '#FFD880', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
+    const styleLineADIZ_P = {color: '#F29A35', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
+    const styleLineADIZ_TW = {color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false}; // Same as median visually in original
+    const styleLineADIZ_C = {color: '#c0392b', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
+    const styleLineBaseline_C = {color: '#c0392b', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false};
 
-    // Load GeoJSON data
-    fetch('./geojson/tw.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#1E3D58',
-                        weight: 1.5,
-                        opacity: 0.8,
-                        dashArray: '10, 10, 2, 10',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
+    const styleFillRCR = {stroke: false, fillColor: '#057DCD', fillOpacity: 0.3, fillRule: 'nonzero'};
+    const styleFillRCR_M = {stroke: false, fillColor: '#43B0F1', fillOpacity: 0.3, fillRule: 'nonzero'};
+    const styleFill1996 = {stroke: false, fillColor: '#f7b267', fillOpacity: 0.5, fillRule: 'nonzero'};
+    const styleFill2022 = {stroke: false, fillColor: '#f79d65', fillOpacity: 0.5, fillRule: 'nonzero'};
+    const styleFill202304 = {stroke: false, fillColor: '#f4845f', fillOpacity: 0.5, fillRule: 'nonzero'};
+    const styleFill202308 = {stroke: false, fillColor: '#f4845f', fillOpacity: 0.5, fillRule: 'nonzero'}; // Same as 202304
+    const styleFill2024A = {stroke: false, fillColor: '#f27059', fillOpacity: 0.5, fillRule: 'nonzero'};
+    const styleFill2024B = {stroke: false, fillColor: '#f25c54', fillOpacity: 0.5, fillRule: 'nonzero'};
+
+    // --- GeoJSON Layer Configuration ---
+    const geoJsonLayersConfig = [
+        /*
+        {name: "台湾边界", url: './geojson/tw.geojson', style: styleLineDefault},
+        {name: "领海基线", url: './geojson/baseline.geojson', style: styleLineDefault},
+        {name: "海峡中线", url: './geojson/medianline.geojson', style: styleLineMedian},
+        {name: "日方ADIZ", url: './geojson/adiz_j.geojson', style: styleLineADIZ_J},
+        {name: "菲方ADIZ", url: './geojson/adiz_p.geojson', style: styleLineADIZ_P},
+        {name: "台方ADIZ", url: './geojson/adiz.geojson', style: styleLineADIZ_TW},
+        {name: "我方ADIZ", url: './geojson/adiz_c.geojson', style: styleLineADIZ_C},
+        {name: "我方领海基线", url: './geojson/baseline_c.geojson', style: styleLineBaseline_C},
+        */
+        {name: "RCR区域", url: './geojson/rcr.geojson', style: styleFillRCR},
+        {name: "RCR M区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M},
+        {name: "1996演习区", url: './geojson/1996.geojson', style: styleFill1996},
+        {name: "2022演习区", url: './geojson/2022.geojson', style: styleFill2022},
+        {name: "202304演习区", url: './geojson/202304.geojson', style: styleFill202304},
+        {name: "202308演习区", url: './geojson/202308.geojson', style: styleFill202308},
+        {name: "2024A演习区", url: './geojson/2024A.geojson', style: styleFill2024A},
+        {name: "2024B演习区", url: './geojson/2024B.geojson', style: styleFill2024B},
+        // Point Layers (Circles)
+        /*
+        {
+            name: "ADIZ P J 点", url: './geojson/adiz_p_j.geojson', isPointLayer: true,
+            pointToLayer: (feature, latlng) => L.circle(latlng, {
+                radius: feature.properties.radius,
+                color: '#FFD880',
+                weight: 1.5,
+                opacity: 0.6,
+                dashArray: '10, 0, 0, 30',
+                fill: false
+            })
+        },
+        */
+        {
+            name: "RCR P 点", url: './geojson/rcr_p.geojson', isPointLayer: true,
+            pointToLayer: (feature, latlng) => L.circle(latlng, {
+                radius: feature.properties.radius,
+                stroke: false,
+                fillColor: '#057DCD',
+                fillOpacity: 0.3,
+                fillRule: 'nonzero'
+            })
+        },
+        {
+            name: "RCR P O 点", url: './geojson/rcr_p_o.geojson', isPointLayer: true,
+            pointToLayer: (feature, latlng) => L.circle(latlng, {
+                radius: feature.properties.radius,
+                color: '#057DCD',
+                weight: 1,
+                opacity: 0.4,
+                dashArray: '10',
+                fillColor: '#057DCD',
+                fillOpacity: 0.3,
+                fillRule: 'nonzero'
+            })
+        },
+        {
+            name: "1996 P 点", url: './geojson/1996_p.geojson', isPointLayer: true,
+            pointToLayer: (feature, latlng) => L.circle(latlng, {
+                radius: feature.properties.radius,
+                stroke: false,
+                fillColor: '#f7b267',
+                fillOpacity: 0.5,
+                fillRule: 'nonzero'
+            })
+        }
+        // Add other GeoJSON configurations here...
+        // Example for commented out road.geojson:
+        // { name: "道路", url: './geojson/road.geojson', style: { color: '#FF8100', weight: 3, opacity: 0.6, dashArray: '10, 10, 2, 10', fill: false } },
+    ];
+
+    // --- Function to Load GeoJSON Layers ---
+    async function loadGeoJsonLayers(mapInstance, layersConfig) {
+        //updateLoadingStatus(`开始加载 ${layersConfig.length} 个 GeoJSON 图层...`);
+        let loadedCount = 0;
+        let errorCount = 0;
+
+        const promises = layersConfig.map(config => {
+            return fetch(config.url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`加载 ${config.url} 失败: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let layer;
+                    const options = {};
+                    if (config.isPointLayer && typeof config.pointToLayer === 'function') {
+                        options.pointToLayer = config.pointToLayer;
+                    } else if (config.style) {
+                        options.style = config.style;
+                    }
+                    // Add onEachFeature for popups or other interactions if needed
+                    // options.onEachFeature = (feature, layer) => {
+                    // if (feature.properties && feature.properties.name) {
+                    // layer.bindPopup(feature.properties.name);
+                    // }
+                    // };
+                    layer = L.geoJSON(data, options);
+                    layer.addTo(mapInstance);
+                    // console.log(`${config.name} 图层已添加。`);
+                    loadedCount++;
+                })
+                .catch(error => {
+                    console.error(`处理 ${config.name} (${config.url}) 时出错:`, error);
+                    addErrorMessage(`图层 "${config.name}" 加载失败。`);
+                    errorCount++;
+                });
         });
 
-    fetch('./geojson/baseline.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#1E3D58',
-                        weight: 1.5,
-                        opacity: 0.8,
-                        dashArray: '10, 10, 2, 10',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
+        // Wait for all fetch operations to settle (either succeed or fail)
+        await Promise.allSettled(promises);
+
+        //updateLoadingStatus(`GeoJSON 图层加载完成。成功: ${loadedCount}, 失败: ${errorCount}。`);
+        if (errorCount === 0 && loadedCount > 0) {
+            setTimeout(() => {
+                if (infoPanelEl) infoPanelEl.style.display = 'none';
+            }, 3000); // Hide panel if all good
+        }
+    }
+
+    // Load all GeoJSON layers
+    loadGeoJsonLayers(map, geoJsonLayersConfig);
 
 
-    fetch('./geojson/medianline.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#1E3D58',
-                        weight: 1.5,
-                        opacity: 0.6,
-                        dashArray: '10, 0, 0, 30'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/adiz_j.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#FFD880',
-                        weight: 1.5,
-                        opacity: 0.6,
-                        dashArray: '10, 0, 0, 30',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/adiz_p.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#F29A35',
-                        weight: 1.5,
-                        opacity: 0.6,
-                        dashArray: '10, 0, 0, 30',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/adiz.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#1E3D58',
-                        weight: 1.5,
-                        opacity: 0.6,
-                        dashArray: '10, 0, 0, 30',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/adiz_p_j.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circle(latlng, {
-                        radius: feature.properties.radius,
-                        color: '#FFD880',
-                        weight: 1.5,
-                        opacity: 0.6,
-                        dashArray: '10, 0, 0, 30',
-                        fill: false
-                    });
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/adiz_c.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#c0392b',
-                        weight: 1.5,
-                        opacity: 0.6,
-                        dashArray: '10, 0, 0, 30',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/baseline_c.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        color: '#c0392b',
-                        weight: 1.5,
-                        opacity: 0.8,
-                        dashArray: '10, 10, 2, 10',
-                        fill: false
-                    };
-                }
-            }).addTo(map);
-        });
-
-    // fetch('./geojson/road.geojson')
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         L.geoJSON(data, {
-    //             style: function () {
-    //                 return {
-    //                     color: '#FF8100',
-    //                     weight: 3,
-    //                     opacity: 0.6,
-    //                     dashArray: '10, 10, 2, 10',
-    //                     fill: false
-    //                 };
-    //             }
-    //         }).addTo(map);
-    //     });
-
-    fetch('./geojson/rcr.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#057DCD',
-                        fillOpacity: 0.3,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/rcr_p.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circle(latlng, {
-                        radius: feature.properties.radius,
-                        stroke: false,
-                        fillColor: '#057DCD',
-                        fillOpacity: 0.3,
-                        fillRule: 'nonzero'
-                    });
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/rcr_p_o.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circle(latlng, {
-                        radius: feature.properties.radius,
-                        color: '#057DCD',
-                        weight: 1,
-                        opacity: 0.4,
-                        dashArray: '10',
-                        fillColor: '#057DCD',
-                        fillOpacity: 0.3,
-                        fillRule: 'nonzero'
-                    });
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/rcr_m.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#43B0F1',
-                        fillOpacity: 0.3,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/1996.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#f7b267',
-                        fillOpacity: 0.5,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/1996_p.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circle(latlng, {
-                        radius: feature.properties.radius,
-                        stroke: false,
-                        fillColor: '#f7b267',
-                        fillOpacity: 0.5,
-                        fillRule: 'nonzero'
-                    });
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/2022.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#f79d65',
-                        fillOpacity: 0.5,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/2023.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#f4845f',
-                        fillOpacity: 0.5,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/2024A.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#f27059',
-                        fillOpacity: 0.5,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
-    fetch('./geojson/2024B.geojson')
-        .then(response => response.json())
-        .then(data => {
-            L.geoJSON(data, {
-                style: function () {
-                    return {
-                        stroke: false,
-                        fillColor: '#f25c54',
-                        fillOpacity: 0.5,
-                        fillRule: 'nonzero'
-                    };
-                }
-            }).addTo(map);
-        });
-
+    // --- Legend Control ---
+    // This part remains largely the same as it depends on your specific leaflet.legend.js plugin
+    // Ensure the labels and colors in the legend still accurately reflect the styles defined above
     L.control.Legend({
         position: "bottomright",
         title: "图例",
-        collapsed: true,
-        legends: [{
-            label: "我方领海基线、防空识别区",
-            type: "circle",
-            radius: 6,
-            fillColor: "#c0392b",
-        }, {
-            label: "台当局单方面划设的\r\n“海峡中线”、“领海基线”\r\n及“防空识别区”",
-            type: "circle",
-            radius: 6,
-            fillColor: "#1E3D58",
-        }, {
-            label: "台当局划设的禁止、限制空域",
-            type: "circle",
-            radius: 6,
-            fillColor: "#057DCD",
-        }, {
-            label: "台当局划设的军事演训区域",
-            type: "circle",
-            radius: 6,
-            fillColor: "#43B0F1",
-        }, {
-            label: "日方单方面划设的“防空识别区”",
-            type: "circle",
-            radius: 6,
-            fillColor: "#FFD880",
-        }, {
-            label: "菲方单方面划设的“防空识别区”",
-            type: "circle",
-            radius: 6,
-            fillColor: "#F29A35",
-        }, {
-            label: "1996年台海军事演习",
-            type: "circle",
-            radius: 6,
-            fillColor: "#f7b267",
-        }, {
-            label: "2022年环台军事演习",
-            type: "circle",
-            radius: 6,
-            fillColor: "#f79d65",
-        }, {
-            label: "2023年环台军事演习",
-            type: "circle",
-            radius: 6,
-            fillColor: "#f4845f",
-        }, {
-            label: "联合利剑——2024A",
-            type: "circle",
-            radius: 6,
-            fillColor: "#f27059",
-        }, {
-            label: "联合利剑——2024B",
-            type: "circle",
-            radius: 6,
-            fillColor: "#f25c54",
-        }]
+        collapsed: false, // Set to false if you want it expanded by default
+        legends: [
+            /*
+            {
+                label: "我方领海基线、防空识别区",
+                type: "line", // Changed type to line for better representation
+                color: styleLineBaseline_C.color,
+                weight: styleLineBaseline_C.weight,
+                dashArray: styleLineBaseline_C.dashArray
+            }, {
+                label: "台当局单方面划设的\r\n“海峡中线”、“领海基线”\r\n及“防空识别区”", type: "line",
+                color: styleLineDefault.color, weight: styleLineDefault.weight, dashArray: styleLineDefault.dashArray
+            }, {
+                label: "日方单方面划设的“防空识别区”", type: "line",
+                color: styleLineADIZ_J.color, weight: styleLineADIZ_J.weight, dashArray: styleLineADIZ_J.dashArray
+            }, {
+                label: "菲方单方面划设的“防空识别区”", type: "line",
+                color: styleLineADIZ_P.color, weight: styleLineADIZ_P.weight, dashArray: styleLineADIZ_P.dashArray
+            },
+            */
+            {
+                label: "台当局划设的禁止、限制空域", type: "rectangle", // Changed type to rectangle
+                fillColor: styleFillRCR.fillColor, fillOpacity: styleFillRCR.fillOpacity, stroke: false
+            }, {
+                label: "台当局划设的军事演训区域", type: "rectangle",
+                fillColor: styleFillRCR_M.fillColor, fillOpacity: styleFillRCR_M.fillOpacity, stroke: false
+            }, {
+                label: "1996年台海军事演习", type: "rectangle",
+                fillColor: styleFill1996.fillColor, fillOpacity: styleFill1996.fillOpacity, stroke: false
+            }, {
+                label: "2022年 · 多兵种联合战备警巡和实战化演练", type: "rectangle",
+                fillColor: styleFill2022.fillColor, fillOpacity: styleFill2022.fillOpacity, stroke: false
+            }, {
+                label: "2023年 · 海空联合战备警巡演练", type: "rectangle",
+                fillColor: styleFill202304.fillColor, fillOpacity: styleFill202304.fillOpacity, stroke: false
+            }, {
+                label: "2024年 · 联合利剑——2024A", type: "rectangle",
+                fillColor: styleFill2024A.fillColor, fillOpacity: styleFill2024A.fillOpacity, stroke: false
+            }, {
+                label: "2024年 · 联合利剑——2024B", type: "rectangle",
+                fillColor: styleFill2024B.fillColor, fillOpacity: styleFill2024B.fillOpacity, stroke: false
+            }]
     }).addTo(map);
 </script>
 </body>

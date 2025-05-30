@@ -1,7 +1,7 @@
 {
     "type": "Feature",
     "geometry": {
-        "type": "LineString",
+        "type": "MultiPolygon",
         "coordinates": [
             [
                 [

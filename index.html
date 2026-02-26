@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>统一，台湾！</title>
-    <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
-    <link href="./src/leaflet.legend.css" rel="stylesheet"/>
+    <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet" />
+    <link href="./src/leaflet.legend.css" rel="stylesheet" />
     <style>
         body {
             margin: 0;
@@ -14,7 +15,8 @@
         }
 
         #map {
-            height: 100dvh; /* 使用 100dvh 使地图占满整个视口高度 */
+            height: 100dvh;
+            /* 使用 100dvh 使地图占满整个视口高度 */
             width: 100vw;
         }
 
@@ -40,290 +42,297 @@
         }
     </style>
 </head>
+
 <body>
 
-<div id="map"></div>
-<div id="infoPanel" class="info-panel" style="display: none;">
-    <h4>加载信息</h4>
-    <p id="loadingStatus"></p>
-    <ul id="errorMessages" style="list-style-type: none; padding-left: 0;"></ul>
-    <p class="api-key-warning" id="apiKeyWarning" style="display:none;">警告: MapTilesAPI 密钥未配置或直接暴露在前端。请使用后端代理保护您的
-        API 密钥！</p>
-</div>
+    <div id="map"></div>
+    <div id="infoPanel" class="info-panel" style="display: none;">
+        <h4>加载信息</h4>
+        <p id="loadingStatus"></p>
+        <ul id="errorMessages" style="list-style-type: none; padding-left: 0;"></ul>
+        <p class="api-key-warning" id="apiKeyWarning" style="display:none;">警告: MapTilesAPI 密钥未配置或直接暴露在前端。请使用后端代理保护您的
+            API 密钥！</p>
+    </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/proj4js/2.4.3/proj4.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
-<script src='./src/leaflet.ChineseTmsProviders.js' type="text/javascript"></script>
-<script src='./src/leaflet.mapCorrection.min.js' type="text/javascript"></script>
-<script src='./src/leaflet.legend.js' type="text/javascript"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/proj4js/2.4.3/proj4.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
+    <script src='./src/leaflet.ChineseTmsProviders.js' type="text/javascript"></script>
+    <script src='./src/leaflet.mapCorrection.min.js' type="text/javascript"></script>
+    <script src='./src/leaflet.legend.js' type="text/javascript"></script>
 
-<script>
-    // Initialize map
-    const map = L.map('map', {
-        attributionControl: false, // 考虑是否真的需要禁用，许多瓦片服务要求显示归属信息
-    }).setView([24, 120.9], 6);
+    <script>
+        // Initialize map
+        const map = L.map('map', {
+            attributionControl: false, // 考虑是否真的需要禁用，许多瓦片服务要求显示归属信息
+        }).setView([24, 120.9], 6);
 
-    // --- UI Elements for feedback ---
-    const loadingStatusEl = document.getElementById('loadingStatus');
-    const errorMessagesEl = document.getElementById('errorMessages');
-    const infoPanelEl = document.getElementById('infoPanel');
-    const apiKeyWarningEl = document.getElementById('apiKeyWarning');
+        // --- UI Elements for feedback ---
+        const loadingStatusEl = document.getElementById('loadingStatus');
+        const errorMessagesEl = document.getElementById('errorMessages');
+        const infoPanelEl = document.getElementById('infoPanel');
+        const apiKeyWarningEl = document.getElementById('apiKeyWarning');
 
-    function showInfoPanel() {
-        if (infoPanelEl) infoPanelEl.style.display = 'block';
-    }
-
-    function updateLoadingStatus(message) {
-        if (loadingStatusEl) loadingStatusEl.textContent = message;
-        showInfoPanel();
-    }
-
-    function addErrorMessage(message) {
-        if (errorMessagesEl) {
-            const li = document.createElement('li');
-            li.style.color = 'red';
-            li.textContent = message;
-            errorMessagesEl.appendChild(li);
+        function showInfoPanel() {
+            if (infoPanelEl) infoPanelEl.style.display = 'block';
         }
-        showInfoPanel();
-    }
 
-    // --- Base Layers Definition ---
-    const AutoNavi = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
-        // GaoDe maps require attribution. Check their terms.
-        // attribution: '高德地图' // Example
-    });
-    const AutoNavi_S = L.layerGroup(
-        [
-            L.tileLayer.chinaProvider('GaoDe.Satellite.Map'),
-            L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion')
-        ]
-    );
-    const MapTilesAPI_OSMEnglish = L.tileLayer('https://maptiles.p.rapidapi.com/en/map/v1/{z}/{x}/{y}.png?rapidapi-key={apikey}', {
-        apikey: '73e4d2d955msh4ac8381a3a4da28p135d2ajsn34e2fffd2605',
-        maxZoom: 19
-    });
-    const OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    });
-    const CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    });
-
-    const baseLayers = {
-        "OpenStreetMap": OpenStreetMap_Mapnik, // Renamed for clarity,
-        "MapTiles OSM": MapTilesAPI_OSMEnglish,
-        "高德地图": AutoNavi,
-        "高德卫星地图": AutoNavi_S,
-        "CartoDB DarkMatter": CartoDB_DarkMatter
-    };
-
-    const overlayLayers = {
-        // Overlay layers can be added here if needed, or managed dynamically
-    };
-
-    map.addLayer(OpenStreetMap_Mapnik);
-    L.control.layers(baseLayers, overlayLayers, {collapsed: true}).addTo(map);
-    L.control.scale({position: 'bottomleft', maxWidth: 100, imperial: false}).addTo(map);
-
-    // --- Reusable Styles for GeoJSON ---
-    const styleLineDefault = {color: '#1E3D58', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false};
-    const styleLineMedian = {color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
-    const styleLineADIZ_J = {color: '#FFD880', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
-    const styleLineADIZ_P = {color: '#F29A35', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
-    const styleLineADIZ_TW = {color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false}; // Same as median visually in original
-    const styleLineADIZ_C = {color: '#c0392b', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false};
-    const styleLineBaseline_C = {color: '#c0392b', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false};
-
-    const styleFillRCR = {stroke: false, fillColor: '#057DCD', fillOpacity: 0.3, fillRule: 'nonzero'};
-    const styleFillRCR_M = {stroke: false, fillColor: '#43B0F1', fillOpacity: 0.3, fillRule: 'nonzero'};
-    const styleFill1996 = {stroke: false, fillColor: '#f7b267', fillOpacity: 0.5, fillRule: 'nonzero'};
-    const styleFill2022 = {stroke: false, fillColor: '#f79d65', fillOpacity: 0.5, fillRule: 'nonzero'};
-    const styleFill202304 = {stroke: false, fillColor: '#f4845f', fillOpacity: 0.5, fillRule: 'nonzero'};
-    const styleFill202308 = {stroke: false, fillColor: '#f4845f', fillOpacity: 0.5, fillRule: 'nonzero'}; // Same as 202304
-    const styleFill2024A = {stroke: false, fillColor: '#f27059', fillOpacity: 0.5, fillRule: 'nonzero'};
-    const styleFill2024B = {stroke: false, fillColor: '#f25c54', fillOpacity: 0.5, fillRule: 'nonzero'};
-
-    // --- GeoJSON Layer Configuration ---
-    const geoJsonLayersConfig = [
-        /*
-        {name: "台湾边界", url: './geojson/tw.geojson', style: styleLineDefault},
-        {name: "领海基线", url: './geojson/baseline.geojson', style: styleLineDefault},
-        {name: "海峡中线", url: './geojson/medianline.geojson', style: styleLineMedian},
-        {name: "日方ADIZ", url: './geojson/adiz_j.geojson', style: styleLineADIZ_J},
-        {name: "菲方ADIZ", url: './geojson/adiz_p.geojson', style: styleLineADIZ_P},
-        {name: "台方ADIZ", url: './geojson/adiz.geojson', style: styleLineADIZ_TW},
-        {name: "我方ADIZ", url: './geojson/adiz_c.geojson', style: styleLineADIZ_C},
-        {name: "我方领海基线", url: './geojson/baseline_c.geojson', style: styleLineBaseline_C},
-        */
-        {name: "RCR区域", url: './geojson/rcr.geojson', style: styleFillRCR},
-        {name: "RCR M区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M},
-        {name: "1996演习区", url: './geojson/1996.geojson', style: styleFill1996},
-        {name: "2022演习区", url: './geojson/2022.geojson', style: styleFill2022},
-        {name: "202304演习区", url: './geojson/202304.geojson', style: styleFill202304},
-        {name: "202308演习区", url: './geojson/202308.geojson', style: styleFill202308},
-        {name: "2024A演习区", url: './geojson/2024A.geojson', style: styleFill2024A},
-        {name: "2024B演习区", url: './geojson/2024B.geojson', style: styleFill2024B},
-        // Point Layers (Circles)
-        /*
-        {
-            name: "ADIZ P J 点", url: './geojson/adiz_p_j.geojson', isPointLayer: true,
-            pointToLayer: (feature, latlng) => L.circle(latlng, {
-                radius: feature.properties.radius,
-                color: '#FFD880',
-                weight: 1.5,
-                opacity: 0.6,
-                dashArray: '10, 0, 0, 30',
-                fill: false
-            })
-        },
-        */
-        {
-            name: "RCR P 点", url: './geojson/rcr_p.geojson', isPointLayer: true,
-            pointToLayer: (feature, latlng) => L.circle(latlng, {
-                radius: feature.properties.radius,
-                stroke: false,
-                fillColor: '#057DCD',
-                fillOpacity: 0.3,
-                fillRule: 'nonzero'
-            })
-        },
-        {
-            name: "RCR P O 点", url: './geojson/rcr_p_o.geojson', isPointLayer: true,
-            pointToLayer: (feature, latlng) => L.circle(latlng, {
-                radius: feature.properties.radius,
-                color: '#057DCD',
-                weight: 1,
-                opacity: 0.4,
-                dashArray: '10',
-                fillColor: '#057DCD',
-                fillOpacity: 0.3,
-                fillRule: 'nonzero'
-            })
-        },
-        {
-            name: "1996 P 点", url: './geojson/1996_p.geojson', isPointLayer: true,
-            pointToLayer: (feature, latlng) => L.circle(latlng, {
-                radius: feature.properties.radius,
-                stroke: false,
-                fillColor: '#f7b267',
-                fillOpacity: 0.5,
-                fillRule: 'nonzero'
-            })
+        function updateLoadingStatus(message) {
+            if (loadingStatusEl) loadingStatusEl.textContent = message;
+            showInfoPanel();
         }
-        // Add other GeoJSON configurations here...
-        // Example for commented out road.geojson:
-        // { name: "道路", url: './geojson/road.geojson', style: { color: '#FF8100', weight: 3, opacity: 0.6, dashArray: '10, 10, 2, 10', fill: false } },
-    ];
 
-    // --- Function to Load GeoJSON Layers ---
-    async function loadGeoJsonLayers(mapInstance, layersConfig) {
-        //updateLoadingStatus(`开始加载 ${layersConfig.length} 个 GeoJSON 图层...`);
-        let loadedCount = 0;
-        let errorCount = 0;
+        function addErrorMessage(message) {
+            if (errorMessagesEl) {
+                const li = document.createElement('li');
+                li.style.color = 'red';
+                li.textContent = message;
+                errorMessagesEl.appendChild(li);
+            }
+            showInfoPanel();
+        }
 
-        const promises = layersConfig.map(config => {
-            return fetch(config.url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`加载 ${config.url} 失败: ${response.status} ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    let layer;
-                    const options = {};
-                    if (config.isPointLayer && typeof config.pointToLayer === 'function') {
-                        options.pointToLayer = config.pointToLayer;
-                    } else if (config.style) {
-                        options.style = config.style;
-                    }
-                    // Add onEachFeature for popups or other interactions if needed
-                    // options.onEachFeature = (feature, layer) => {
-                    // if (feature.properties && feature.properties.name) {
-                    // layer.bindPopup(feature.properties.name);
-                    // }
-                    // };
-                    layer = L.geoJSON(data, options);
-                    layer.addTo(mapInstance);
-                    // console.log(`${config.name} 图层已添加。`);
-                    loadedCount++;
-                })
-                .catch(error => {
-                    console.error(`处理 ${config.name} (${config.url}) 时出错:`, error);
-                    addErrorMessage(`图层 "${config.name}" 加载失败。`);
-                    errorCount++;
-                });
+        // --- Base Layers Definition ---
+        const AutoNavi = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
+            // GaoDe maps require attribution. Check their terms.
+            // attribution: '高德地图' // Example
+        });
+        const AutoNavi_S = L.layerGroup(
+            [
+                L.tileLayer.chinaProvider('GaoDe.Satellite.Map'),
+                L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion')
+            ]
+        );
+        const MapTilesAPI_OSMEnglish = L.tileLayer('https://maptiles.p.rapidapi.com/en/map/v1/{z}/{x}/{y}.png?rapidapi-key={apikey}', {
+            apikey: '73e4d2d955msh4ac8381a3a4da28p135d2ajsn34e2fffd2605',
+            maxZoom: 19
+        });
+        const OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        const CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            subdomains: 'abcd',
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         });
 
-        // Wait for all fetch operations to settle (either succeed or fail)
-        await Promise.allSettled(promises);
+        const baseLayers = {
+            "OpenStreetMap": OpenStreetMap_Mapnik, // Renamed for clarity,
+            "MapTiles OSM": MapTilesAPI_OSMEnglish,
+            "高德地图": AutoNavi,
+            "高德卫星地图": AutoNavi_S,
+            "CartoDB DarkMatter": CartoDB_DarkMatter
+        };
 
-        //updateLoadingStatus(`GeoJSON 图层加载完成。成功: ${loadedCount}, 失败: ${errorCount}。`);
-        if (errorCount === 0 && loadedCount > 0) {
-            setTimeout(() => {
-                if (infoPanelEl) infoPanelEl.style.display = 'none';
-            }, 3000); // Hide panel if all good
-        }
-    }
+        const overlayLayers = {
+            // Overlay layers can be added here if needed, or managed dynamically
+        };
 
-    // Load all GeoJSON layers
-    loadGeoJsonLayers(map, geoJsonLayersConfig);
+        map.addLayer(OpenStreetMap_Mapnik);
+        L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
+        L.control.scale({ position: 'bottomleft', maxWidth: 100, imperial: false }).addTo(map);
 
+        // --- Reusable Styles for GeoJSON ---
+        const styleLineDefault = { color: '#1E3D58', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false };
+        const styleLineMedian = { color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
+        const styleLineADIZ_J = { color: '#FFD880', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
+        const styleLineADIZ_P = { color: '#F29A35', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
+        const styleLineADIZ_TW = { color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false }; // Same as median visually in original
+        const styleLineADIZ_C = { color: '#c0392b', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
+        const styleLineBaseline_C = { color: '#c0392b', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false };
 
-    // --- Legend Control ---
-    // This part remains largely the same as it depends on your specific leaflet.legend.js plugin
-    // Ensure the labels and colors in the legend still accurately reflect the styles defined above
-    L.control.Legend({
-        position: "bottomright",
-        title: "图例",
-        collapsed: false, // Set to false if you want it expanded by default
-        legends: [
+        const styleFillRCR = { stroke: false, fillColor: '#057DCD', fillOpacity: 0.3, fillRule: 'nonzero' };
+        const styleFillRCR_M = { stroke: false, fillColor: '#43B0F1', fillOpacity: 0.3, fillRule: 'nonzero' };
+        const styleFill1996 = { stroke: false, fillColor: '#a4a2a2', fillOpacity: 0.5, fillRule: 'nonzero' };
+        const styleFill2022 = { stroke: false, fillColor: '#ab9c9b', fillOpacity: 0.5, fillRule: 'nonzero' };
+        const styleFill202304 = { stroke: false, fillColor: '#b29594', fillOpacity: 0.5, fillRule: 'nonzero' };
+        const styleFill202308 = { stroke: false, fillColor: '#b29594', fillOpacity: 0.5, fillRule: 'nonzero' }; // Same as 202304
+        const styleFill2024A = { stroke: false, fillColor: '#b98f8d', fillOpacity: 0.5, fillRule: 'nonzero' };
+        const styleFill2024B = { stroke: false, fillColor: '#c08986', fillOpacity: 0.5, fillRule: 'nonzero' };
+        const styleFill2025B = { stroke: false, fillColor: '#c8827e', fillOpacity: 0.5, fillRule: 'nonzero' };
+
+        // --- GeoJSON Layer Configuration ---
+        const geoJsonLayersConfig = [
+            /*
+            {name: "台湾边界", url: './geojson/tw.geojson', style: styleLineDefault},
+            {name: "领海基线", url: './geojson/baseline.geojson', style: styleLineDefault},
+            {name: "海峡中线", url: './geojson/medianline.geojson', style: styleLineMedian},
+            {name: "日方ADIZ", url: './geojson/adiz_j.geojson', style: styleLineADIZ_J},
+            {name: "菲方ADIZ", url: './geojson/adiz_p.geojson', style: styleLineADIZ_P},
+            {name: "台方ADIZ", url: './geojson/adiz.geojson', style: styleLineADIZ_TW},
+            {name: "我方ADIZ", url: './geojson/adiz_c.geojson', style: styleLineADIZ_C},
+            {name: "我方领海基线", url: './geojson/baseline_c.geojson', style: styleLineBaseline_C},
+            */
+            { name: "RCR区域", url: './geojson/rcr.geojson', style: styleFillRCR },
+            { name: "RCR M区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M },
+            { name: "1996演习区", url: './geojson/1996.geojson', style: styleFill1996 },
+            { name: "2022演习区", url: './geojson/2022.geojson', style: styleFill2022 },
+            { name: "202304演习区", url: './geojson/202304.geojson', style: styleFill202304 },
+            { name: "202308演习区", url: './geojson/202308.geojson', style: styleFill202308 },
+            { name: "2024A演习区", url: './geojson/2024A.geojson', style: styleFill2024A },
+            { name: "2024B演习区", url: './geojson/2024B.geojson', style: styleFill2024B },
+            { name: "正义使命2025演习区", url: './geojson/2025B.geojson', style: styleFill2025B },
+            // Point Layers (Circles)
             /*
             {
-                label: "我方领海基线、防空识别区",
-                type: "line", // Changed type to line for better representation
-                color: styleLineBaseline_C.color,
-                weight: styleLineBaseline_C.weight,
-                dashArray: styleLineBaseline_C.dashArray
-            }, {
-                label: "台当局单方面划设的\r\n“海峡中线”、“领海基线”\r\n及“防空识别区”", type: "line",
-                color: styleLineDefault.color, weight: styleLineDefault.weight, dashArray: styleLineDefault.dashArray
-            }, {
-                label: "日方单方面划设的“防空识别区”", type: "line",
-                color: styleLineADIZ_J.color, weight: styleLineADIZ_J.weight, dashArray: styleLineADIZ_J.dashArray
-            }, {
-                label: "菲方单方面划设的“防空识别区”", type: "line",
-                color: styleLineADIZ_P.color, weight: styleLineADIZ_P.weight, dashArray: styleLineADIZ_P.dashArray
+                name: "ADIZ P J 点", url: './geojson/adiz_p_j.geojson', isPointLayer: true,
+                pointToLayer: (feature, latlng) => L.circle(latlng, {
+                    radius: feature.properties.radius,
+                    color: '#FFD880',
+                    weight: 1.5,
+                    opacity: 0.6,
+                    dashArray: '10, 0, 0, 30',
+                    fill: false
+                })
             },
             */
             {
-                label: "台当局划设的禁止、限制空域", type: "rectangle", // Changed type to rectangle
-                fillColor: styleFillRCR.fillColor, fillOpacity: styleFillRCR.fillOpacity, stroke: false
-            }, {
-                label: "台当局划设的军事演训区域", type: "rectangle",
-                fillColor: styleFillRCR_M.fillColor, fillOpacity: styleFillRCR_M.fillOpacity, stroke: false
-            }, {
-                label: "1996年台海军事演习", type: "rectangle",
-                fillColor: styleFill1996.fillColor, fillOpacity: styleFill1996.fillOpacity, stroke: false
-            }, {
-                label: "2022年 · 多兵种联合战备警巡和实战化演练", type: "rectangle",
-                fillColor: styleFill2022.fillColor, fillOpacity: styleFill2022.fillOpacity, stroke: false
-            }, {
-                label: "2023年 · 海空联合战备警巡演练", type: "rectangle",
-                fillColor: styleFill202304.fillColor, fillOpacity: styleFill202304.fillOpacity, stroke: false
-            }, {
-                label: "2024年 · 联合利剑——2024A", type: "rectangle",
-                fillColor: styleFill2024A.fillColor, fillOpacity: styleFill2024A.fillOpacity, stroke: false
-            }, {
-                label: "2024年 · 联合利剑——2024B", type: "rectangle",
-                fillColor: styleFill2024B.fillColor, fillOpacity: styleFill2024B.fillOpacity, stroke: false
-            }]
-    }).addTo(map);
-</script>
+                name: "RCR P 点", url: './geojson/rcr_p.geojson', isPointLayer: true,
+                pointToLayer: (feature, latlng) => L.circle(latlng, {
+                    radius: feature.properties.radius,
+                    stroke: false,
+                    fillColor: '#057DCD',
+                    fillOpacity: 0.3,
+                    fillRule: 'nonzero'
+                })
+            },
+            {
+                name: "RCR P O 点", url: './geojson/rcr_p_o.geojson', isPointLayer: true,
+                pointToLayer: (feature, latlng) => L.circle(latlng, {
+                    radius: feature.properties.radius,
+                    color: '#057DCD',
+                    weight: 1,
+                    opacity: 0.4,
+                    dashArray: '10',
+                    fillColor: '#057DCD',
+                    fillOpacity: 0.3,
+                    fillRule: 'nonzero'
+                })
+            },
+            {
+                name: "1996 P 点", url: './geojson/1996_p.geojson', isPointLayer: true,
+                pointToLayer: (feature, latlng) => L.circle(latlng, {
+                    radius: feature.properties.radius,
+                    stroke: false,
+                    fillColor: '#f7b267',
+                    fillOpacity: 0.5,
+                    fillRule: 'nonzero'
+                })
+            }
+            // Add other GeoJSON configurations here...
+            // Example for commented out road.geojson:
+            // { name: "道路", url: './geojson/road.geojson', style: { color: '#FF8100', weight: 3, opacity: 0.6, dashArray: '10, 10, 2, 10', fill: false } },
+        ];
+
+        // --- Function to Load GeoJSON Layers ---
+        async function loadGeoJsonLayers(mapInstance, layersConfig) {
+            //updateLoadingStatus(`开始加载 ${layersConfig.length} 个 GeoJSON 图层...`);
+            let loadedCount = 0;
+            let errorCount = 0;
+
+            const promises = layersConfig.map(config => {
+                return fetch(config.url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`加载 ${config.url} 失败: ${response.status} ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        let layer;
+                        const options = {};
+                        if (config.isPointLayer && typeof config.pointToLayer === 'function') {
+                            options.pointToLayer = config.pointToLayer;
+                        } else if (config.style) {
+                            options.style = config.style;
+                        }
+                        // Add onEachFeature for popups or other interactions if needed
+                        // options.onEachFeature = (feature, layer) => {
+                        // if (feature.properties && feature.properties.name) {
+                        // layer.bindPopup(feature.properties.name);
+                        // }
+                        // };
+                        layer = L.geoJSON(data, options);
+                        layer.addTo(mapInstance);
+                        // console.log(`${config.name} 图层已添加。`);
+                        loadedCount++;
+                    })
+                    .catch(error => {
+                        console.error(`处理 ${config.name} (${config.url}) 时出错:`, error);
+                        addErrorMessage(`图层 "${config.name}" 加载失败。`);
+                        errorCount++;
+                    });
+            });
+
+            // Wait for all fetch operations to settle (either succeed or fail)
+            await Promise.allSettled(promises);
+
+            //updateLoadingStatus(`GeoJSON 图层加载完成。成功: ${loadedCount}, 失败: ${errorCount}。`);
+            if (errorCount === 0 && loadedCount > 0) {
+                setTimeout(() => {
+                    if (infoPanelEl) infoPanelEl.style.display = 'none';
+                }, 3000); // Hide panel if all good
+            }
+        }
+
+        // Load all GeoJSON layers
+        loadGeoJsonLayers(map, geoJsonLayersConfig);
+
+
+        // --- Legend Control ---
+        // This part remains largely the same as it depends on your specific leaflet.legend.js plugin
+        // Ensure the labels and colors in the legend still accurately reflect the styles defined above
+        L.control.Legend({
+            position: "bottomright",
+            title: "图例",
+            collapsed: false, // Set to false if you want it expanded by default
+            legends: [
+                /*
+                {
+                    label: "我方领海基线、防空识别区",
+                    type: "line", // Changed type to line for better representation
+                    color: styleLineBaseline_C.color,
+                    weight: styleLineBaseline_C.weight,
+                    dashArray: styleLineBaseline_C.dashArray
+                }, {
+                    label: "台当局单方面划设的\r\n“海峡中线”、“领海基线”\r\n及“防空识别区”", type: "line",
+                    color: styleLineDefault.color, weight: styleLineDefault.weight, dashArray: styleLineDefault.dashArray
+                }, {
+                    label: "日方单方面划设的“防空识别区”", type: "line",
+                    color: styleLineADIZ_J.color, weight: styleLineADIZ_J.weight, dashArray: styleLineADIZ_J.dashArray
+                }, {
+                    label: "菲方单方面划设的“防空识别区”", type: "line",
+                    color: styleLineADIZ_P.color, weight: styleLineADIZ_P.weight, dashArray: styleLineADIZ_P.dashArray
+                },
+                */
+                {
+                    label: "台当局划设的禁止、限制空域", type: "rectangle", // Changed type to rectangle
+                    fillColor: styleFillRCR.fillColor, fillOpacity: styleFillRCR.fillOpacity, stroke: false
+                }, {
+                    label: "台当局划设的军事演训区域", type: "rectangle",
+                    fillColor: styleFillRCR_M.fillColor, fillOpacity: styleFillRCR_M.fillOpacity, stroke: false
+                }, {
+                    label: "1996年台海军事演习", type: "rectangle",
+                    fillColor: styleFill1996.fillColor, fillOpacity: styleFill1996.fillOpacity, stroke: false
+                }, {
+                    label: "2022年 · 多兵种联合战备警巡和实战化演练", type: "rectangle",
+                    fillColor: styleFill2022.fillColor, fillOpacity: styleFill2022.fillOpacity, stroke: false
+                }, {
+                    label: "2023年 · 海空联合战备警巡演练", type: "rectangle",
+                    fillColor: styleFill202304.fillColor, fillOpacity: styleFill202304.fillOpacity, stroke: false
+                }, {
+                    label: "2024年 · 联合利剑——2024A", type: "rectangle",
+                    fillColor: styleFill2024A.fillColor, fillOpacity: styleFill2024A.fillOpacity, stroke: false
+                }, {
+                    label: "2024年 · 联合利剑——2024B", type: "rectangle",
+                    fillColor: styleFill2024B.fillColor, fillOpacity: styleFill2024B.fillOpacity, stroke: false
+                }, {
+                    label: "2025年 · 正义使命——2025", type: "rectangle",
+                    fillColor: styleFill2025B.fillColor, fillOpacity: styleFill2025B.fillOpacity, stroke: false
+                }]
+        }).addTo(map);
+    </script>
 </body>
+
 </html>

@@ -44,7 +44,21 @@
 </head>
 
 <body>
-
+<div id="layerInfo" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 9999;
+    min-width: 200px;
+    display: none; /* 初始隐藏，点击后显示 */
+">
+    <h4 style="margin:0 0 10px 0;">当前图层信息</h4>
+    <p id="layerName">-</p>
+</div>
     <div id="map"></div>
     <div id="infoPanel" class="info-panel" style="display: none;">
         <h4>加载信息</h4>
@@ -152,6 +166,10 @@
         const styleFill2024B = { stroke: false, fillColor: '#c08986', fillOpacity: 0.5, fillRule: 'nonzero' };
         const styleFill2025B = { stroke: false, fillColor: '#c8827e', fillOpacity: 0.5, fillRule: 'nonzero' };
 
+        // ===== 【新增代码】获取信息显示容器 =====
+        const layerInfoEl = document.getElementById('layerInfo');
+        const layerNameEl = document.getElementById('layerName');
+
         // --- GeoJSON Layer Configuration ---
         const geoJsonLayersConfig = [
             /*
@@ -164,15 +182,15 @@
             {name: "我方ADIZ", url: './geojson/adiz_c.geojson', style: styleLineADIZ_C},
             {name: "我方领海基线", url: './geojson/baseline_c.geojson', style: styleLineBaseline_C},
             */
-            { name: "RCR区域", url: './geojson/rcr.geojson', style: styleFillRCR },
-            { name: "RCR M区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M },
-            { name: "1996演习区", url: './geojson/1996.geojson', style: styleFill1996 },
-            { name: "2022演习区", url: './geojson/2022.geojson', style: styleFill2022 },
-            { name: "202304演习区", url: './geojson/202304.geojson', style: styleFill202304 },
-            { name: "202308演习区", url: './geojson/202308.geojson', style: styleFill202308 },
-            { name: "2024A演习区", url: './geojson/2024A.geojson', style: styleFill2024A },
-            { name: "2024B演习区", url: './geojson/2024B.geojson', style: styleFill2024B },
-            { name: "正义使命2025演习区", url: './geojson/2025B.geojson', style: styleFill2025B },
+            { name: "台当局划设的禁止、限制空域", url: './geojson/rcr.geojson', style: styleFillRCR },
+            { name: "台当局划设的军事演训区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M },
+            { name: "1996年台海军事演习", url: './geojson/1996.geojson', style: styleFill1996 },
+            { name: "2022年·多兵种联合战备警巡和实战化演练", url: './geojson/2022.geojson', style: styleFill2022 },
+            { name: "2023年·海空联合战备警巡演练", url: './geojson/202304.geojson', style: styleFill202304 },
+            { name: "2023年·海空联合战备警巡演练", url: './geojson/202308.geojson', style: styleFill202308 },
+            { name: "2024年 · 联合利剑—2024A", url: './geojson/2024A.geojson', style: styleFill2024A },
+            { name: "2024年 · 联合利剑—2024B", url: './geojson/2024B.geojson', style: styleFill2024B },
+            { name: "2025年 · 正义使命—2025", url: './geojson/2025B.geojson', style: styleFill2025B },
             // Point Layers (Circles)
             /*
             {
@@ -209,21 +227,16 @@
                     fillOpacity: 0.3,
                     fillRule: 'nonzero'
                 })
-            },
-            {
-                name: "1996 P 点", url: './geojson/1996_p.geojson', isPointLayer: true,
-                pointToLayer: (feature, latlng) => L.circle(latlng, {
-                    radius: feature.properties.radius,
-                    stroke: false,
-                    fillColor: '#f7b267',
-                    fillOpacity: 0.5,
-                    fillRule: 'nonzero'
-                })
             }
-            // Add other GeoJSON configurations here...
-            // Example for commented out road.geojson:
-            // { name: "道路", url: './geojson/road.geojson', style: { color: '#FF8100', weight: 3, opacity: 0.6, dashArray: '10, 10, 2, 10', fill: false } },
         ];
+
+        // 【可选新增】点击地图空白处隐藏信息面板
+        map.on('click', (e) => {
+            // 判断是否点击在图层外（无目标图层时）
+            if (!e.target || e.target === map) {
+                layerInfoEl.style.display = 'none';
+            }
+        });
 
         // --- Function to Load GeoJSON Layers ---
         async function loadGeoJsonLayers(mapInstance, layersConfig) {
@@ -255,6 +268,18 @@
                         // };
                         layer = L.geoJSON(data, options);
                         layer.addTo(mapInstance);
+                        layer.on('click', (e) => {
+                            // 显示信息面板
+                            layerInfoEl.style.display = 'block';
+                            // 填充图层名称
+                            layerNameEl.textContent = `${config.name}`;
+
+                            // 【可选】在点击位置弹出地图弹窗（保留原有弹窗逻辑可删）
+                            L.popup()
+                                .setLatLng(e.latlng)
+                                .setContent(`${config.name}`)
+                                .openOn(map);
+                        });
                         // console.log(`${config.name} 图层已添加。`);
                         loadedCount++;
                     })
@@ -286,7 +311,7 @@
         L.control.Legend({
             position: "bottomright",
             title: "图例",
-            collapsed: false, // Set to false if you want it expanded by default
+            collapsed: true, // Set to false if you want it expanded by default
             legends: [
                 /*
                 {

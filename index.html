@@ -44,7 +44,7 @@
 </head>
 
 <body>
-<div id="layerInfo" style="
+    <div id="layerInfo" style="
     position: fixed;
     top: 20px;
     right: 20px;
@@ -56,9 +56,9 @@
     min-width: 200px;
     display: none; /* 初始隐藏，点击后显示 */
 ">
-    <h4 style="margin:0 0 10px 0;">当前图层信息</h4>
-    <p id="layerName">-</p>
-</div>
+        <h4 style="margin:0 0 10px 0;">当前图层信息</h4>
+        <p id="layerName">-</p>
+    </div>
     <div id="map"></div>
     <div id="infoPanel" class="info-panel" style="display: none;">
         <h4>加载信息</h4>
@@ -156,8 +156,8 @@
         const styleLineADIZ_C = { color: '#c0392b', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
         const styleLineBaseline_C = { color: '#c0392b', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false };
 
-        const styleFillRCR = { stroke: false, fillColor: '#057DCD', fillOpacity: 0.3, fillRule: 'nonzero' };
-        const styleFillRCR_M = { stroke: false, fillColor: '#43B0F1', fillOpacity: 0.3, fillRule: 'nonzero' };
+        const styleFillRCR = { stroke: true, strokeColor: '#3488ff', strokeWidth: 2 };
+        const styleFillRCR_M = { stroke: false, fillColor: '#43B0F1', fillOpacity: 0.5, fillRule: 'nonzero' };
         const styleFill1996 = { stroke: false, fillColor: '#a4a2a2', fillOpacity: 0.5, fillRule: 'nonzero' };
         const styleFill2022 = { stroke: false, fillColor: '#ab9c9b', fillOpacity: 0.5, fillRule: 'nonzero' };
         const styleFill202304 = { stroke: false, fillColor: '#b29594', fillOpacity: 0.5, fillRule: 'nonzero' };
@@ -182,7 +182,7 @@
             {name: "我方ADIZ", url: './geojson/adiz_c.geojson', style: styleLineADIZ_C},
             {name: "我方领海基线", url: './geojson/baseline_c.geojson', style: styleLineBaseline_C},
             */
-            { name: "台当局划设的禁止、限制空域", url: './geojson/rcr.geojson', style: styleFillRCR },
+            { name: "台当局划设的禁止、限制空域", url: './geojson/tw_air.geojson', style: styleFillRCR },
             { name: "台当局划设的军事演训区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M },
             { name: "1996年台海军事演习", url: './geojson/1996.geojson', style: styleFill1996 },
             { name: "2022年·多兵种联合战备警巡和实战化演练", url: './geojson/2022.geojson', style: styleFill2022 },
@@ -204,7 +204,6 @@
                     fill: false
                 })
             },
-            */
             {
                 name: "RCR P 点", url: './geojson/rcr_p.geojson', isPointLayer: true,
                 pointToLayer: (feature, latlng) => L.circle(latlng, {
@@ -228,6 +227,7 @@
                     fillRule: 'nonzero'
                 })
             }
+            */
         ];
 
         // 【可选新增】点击地图空白处隐藏信息面板

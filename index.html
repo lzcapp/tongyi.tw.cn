@@ -152,7 +152,7 @@
         const styleLineMedian = { color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
         const styleLineADIZ_J = { color: '#FFD880', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
         const styleLineADIZ_P = { color: '#F29A35', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
-        const styleLineADIZ_TW = { color: '#1E3D58', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false }; // Same as median visually in original
+        const styleLineADIZ_TW = { color: '#1E3D58', weight: 2, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false }; // Same as median visually in original
         const styleLineADIZ_C = { color: '#c0392b', weight: 1.5, opacity: 0.6, dashArray: '10, 0, 0, 30', fill: false };
         const styleLineBaseline_C = { color: '#c0392b', weight: 1.5, opacity: 0.8, dashArray: '10, 10, 2, 10', fill: false };
 
@@ -172,18 +172,18 @@
 
         // --- GeoJSON Layer Configuration ---
         const geoJsonLayersConfig = [
+            { name: "台方ADIZ", url: './geojson/adiz.geojson', style: styleLineADIZ_TW },
             /*
             {name: "台湾边界", url: './geojson/tw.geojson', style: styleLineDefault},
             {name: "领海基线", url: './geojson/baseline.geojson', style: styleLineDefault},
             {name: "海峡中线", url: './geojson/medianline.geojson', style: styleLineMedian},
             {name: "日方ADIZ", url: './geojson/adiz_j.geojson', style: styleLineADIZ_J},
             {name: "菲方ADIZ", url: './geojson/adiz_p.geojson', style: styleLineADIZ_P},
-            {name: "台方ADIZ", url: './geojson/adiz.geojson', style: styleLineADIZ_TW},
             {name: "我方ADIZ", url: './geojson/adiz_c.geojson', style: styleLineADIZ_C},
             {name: "我方领海基线", url: './geojson/baseline_c.geojson', style: styleLineBaseline_C},
+            { name: "台当局划设的军事演训区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M },
             */
             { name: "台当局划设的禁止、限制空域", url: './geojson/tw_air.geojson', style: styleFillRCR },
-            { name: "台当局划设的军事演训区域", url: './geojson/rcr_m.geojson', style: styleFillRCR_M },
             { name: "1996年台海军事演习", url: './geojson/1996.geojson', style: styleFill1996 },
             { name: "2022年·多兵种联合战备警巡和实战化演练", url: './geojson/2022.geojson', style: styleFill2022 },
             { name: "2023年4月·海空联合战备警巡演练", url: './geojson/202304.geojson', style: styleFill202304 },
@@ -313,6 +313,10 @@
             title: "图例",
             collapsed: true, // Set to false if you want it expanded by default
             legends: [
+                {
+                    label: "台当局单方面划设的“防空识别区”", type: "polyline",
+                    color: styleLineADIZ_TW.color, weight: styleLineADIZ_TW.weight, stroke: true
+                },
                 /*
                 {
                     label: "我方领海基线、防空识别区",
@@ -320,9 +324,6 @@
                     color: styleLineBaseline_C.color,
                     weight: styleLineBaseline_C.weight,
                     dashArray: styleLineBaseline_C.dashArray
-                }, {
-                    label: "台当局单方面划设的\r\n“海峡中线”、“领海基线”\r\n及“防空识别区”", type: "line",
-                    color: styleLineDefault.color, weight: styleLineDefault.weight, dashArray: styleLineDefault.dashArray
                 }, {
                     label: "日方单方面划设的“防空识别区”", type: "line",
                     color: styleLineADIZ_J.color, weight: styleLineADIZ_J.weight, dashArray: styleLineADIZ_J.dashArray
@@ -332,12 +333,16 @@
                 },
                 */
                 {
-                    label: "台当局划设的禁止、限制空域", type: "rectangle", // Changed type to rectangle
-                    fillColor: styleFillRCR.fillColor, fillOpacity: styleFillRCR.fillOpacity, stroke: false
-                }, {
+                    label: "台当局划设的禁止、限制空域", type: "polyline", // Changed type to rectangle
+                    color: styleFillRCR.color, weight: styleFillRCR.weight, stroke: true
+                },
+                /*
+                {
                     label: "台当局划设的军事演训区域", type: "rectangle",
                     fillColor: styleFillRCR_M.fillColor, fillOpacity: styleFillRCR_M.fillOpacity, stroke: false
-                }, {
+                },
+                */
+                {
                     label: "1996年台海军事演习", type: "rectangle",
                     fillColor: styleFill1996.fillColor, fillOpacity: styleFill1996.fillOpacity, stroke: false
                 }, {

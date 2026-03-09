@@ -6,4 +6,5 @@
 
 ## Screenshot
 
-![Screenshot](https://github.com/lzcapp/tongyi.tw.cn/assets/12462465/b133895c-9313-42e2-83c2-93d6972a1db1)
+![Screenshot](https://github.com/user-attachments/assets/8559602d-e6ee-45d5-8450-6ef24ed88666)
+

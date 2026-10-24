@@ -331,10 +331,10 @@
                     return polygonHit(polygon, latlng);
                 });
             case 'LineString':
-                return distanceToLinePx(geometry.coordinates, latlng) <= LINE_HIT_TOLERANCE_PX;
+                return lineStringHit(geometry.coordinates, latlng);
             case 'MultiLineString':
                 return geometry.coordinates.some(function (line) {
-                    return distanceToLinePx(line, latlng) <= LINE_HIT_TOLERANCE_PX;
+                    return lineStringHit(line, latlng);
                 });
             default:
                 return false;
@@ -345,21 +345,31 @@
         if (!rings.length) {
             return false;
         }
-        // 面状图层按区域命中；不做像素距离兜底，避免低缩放级别把邻近区域也算进来
-        return polygonContains(rings, latlng);
+        // 本项目的 GeoJSON 把多个分离的演习区域放在同一个 Polygon 的多个环里
+        // （而不是标准的内环/洞），因此每个环都按独立区域判断命中。
+        return rings.some(function (ring) {
+            return ringContains(ring, latlng);
+        });
     }
 
-    function polygonContains(rings, latlng) {
-        if (!ringContains(rings[0], latlng)) {
+    // 闭合的 LineString 表示一个封闭空域，按区域命中；未闭合的仍按边界容差命中
+    function lineStringHit(coords, latlng) {
+        if (isClosedRing(coords)) {
+            return (
+                ringContains(coords, latlng) ||
+                distanceToLinePx(coords, latlng) <= LINE_HIT_TOLERANCE_PX
+            );
+        }
+        return distanceToLinePx(coords, latlng) <= LINE_HIT_TOLERANCE_PX;
+    }
+
+    function isClosedRing(coords) {
+        if (!coords || coords.length < 4) {
             return false;
         }
-        for (var i = 1; i < rings.length; i++) {
-            // 内环（洞）内的点不算命中
-            if (ringContains(rings[i], latlng)) {
-                return false;
-            }
-        }
-        return true;
+        var first = coords[0];
+        var last = coords[coords.length - 1];
+        return first[0] === last[0] && first[1] === last[1];
     }
 
     function ringContains(ring, latlng) {

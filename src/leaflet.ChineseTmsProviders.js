@@ -77,7 +77,8 @@ L.TileLayer.ChinaProvider.providers = {
             Annotion: "//t{s}.tianditu.gov.cn/DataServer?T=cta_w&X={x}&Y={y}&L={z}&tk={key}"
         },
         Subdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
-        key: "174705aebfe31b79b3587279e211cb9a"
+        // 出于安全考虑，此处不再内置天地图密钥；如需使用天地图，请通过 options.key 传入自己的密钥
+        key: ""
     },
 
     GaoDe: {

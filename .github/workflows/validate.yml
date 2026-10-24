@@ -1,0 +1,49 @@
+name: validate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: GeoJSON & HTML
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate GeoJSON data
+        run: python3 scripts/validate-geojson.py
+
+      - name: Check GeoJSON ring closure
+        run: python3 scripts/normalize-geojson.py --check
+
+      - name: Validate index.html
+        run: npx --yes html-validate@9 index.html
+
+      - name: Check for leaked API keys
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude-dir=.git 'rapidapi-key' index.html src/; then
+            echo "::error::index.html 或 src/ 中出现了 rapidapi-key，请勿在前端硬编码地图服务密钥。"
+            exit 1
+          fi
+          echo "OK: index.html 与 src/ 中未发现 rapidapi-key。"

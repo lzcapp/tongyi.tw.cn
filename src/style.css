@@ -1,0 +1,360 @@
+/* 页面与地图 UI 样式（Leaflet 自身样式见 vendor/leaflet/leaflet.css） */
+
+:root {
+    --panel-bg: rgba(255, 255, 255, 0.94);
+    --panel-border: rgba(15, 23, 42, 0.08);
+    --panel-radius: 10px;
+    --panel-shadow: 0 4px 18px rgba(15, 23, 42, 0.18);
+    --text: #0f172a;
+    --text-muted: #475569;
+    --text-faint: #64748b;
+    --danger: #b91c1c;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    background: #0b1220;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+#map {
+    width: 100%;
+    height: 100vh;
+    /* 移动端动态视口高度；不支持 dvh 的浏览器回退到 100vh */
+    height: 100dvh;
+    background: #dfe7ef;
+}
+
+.leaflet-container {
+    font-family: inherit;
+}
+
+.leaflet-control-attribution {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text-faint);
+    font-size: 10px;
+}
+
+.leaflet-control-attribution a {
+    color: var(--text-muted);
+}
+
+/* 仅供屏幕阅读器与搜索引擎读取 */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- 加载 / 错误提示 ---------- */
+
+.status {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    z-index: 1200;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: max-content;
+    max-width: min(420px, calc(100vw - 120px));
+    padding: 10px 12px;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+    transform: translateX(-50%);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.status[hidden] {
+    display: none;
+}
+
+.status p {
+    margin: 0;
+}
+
+.status__errors {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    color: var(--danger);
+}
+
+.status__errors:empty,
+.status__actions:empty {
+    display: none;
+}
+
+.status__actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.status__close {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin: -4px -6px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-faint);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.status__close[hidden] {
+    display: none;
+}
+
+.status__close:hover,
+.status__close:focus-visible {
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.status__action {
+    padding: 4px 10px;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    border-radius: 6px;
+    background: #f8fafc;
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.status__action:hover,
+.status__action:focus-visible {
+    background: #e2e8f0;
+}
+
+/* ---------- 当前图层信息 ---------- */
+
+.layer-info {
+    position: fixed;
+    bottom: 44px;
+    left: 12px;
+    z-index: 1100;
+    width: min(300px, calc(100vw - 24px));
+    padding: 12px 38px 12px 14px;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+    font-size: 14px;
+}
+
+.layer-info[hidden] {
+    display: none;
+}
+
+.layer-info__title {
+    margin: 0 0 4px;
+    color: var(--text-faint);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.layer-info__name {
+    margin: 0;
+    font-weight: 600;
+}
+
+.layer-info__detail {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.layer-info__detail:empty {
+    display: none;
+}
+
+.layer-info__close {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-faint);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.layer-info__close:hover,
+.layer-info__close:focus-visible {
+    background: rgba(15, 23, 42, 0.08);
+}
+
+/* ---------- 图例（leaflet.legend 插件） ---------- */
+
+.leaflet-legend {
+    max-width: min(340px, calc(100vw - 20px));
+    max-height: calc(100vh - 140px);
+    overflow: auto;
+    background: var(--panel-bg);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+}
+
+.leaflet-legend-title {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ---------- 说明按钮 / 对话框 ---------- */
+
+.about-control {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.about-control__button {
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.about-control__button:hover,
+.about-control__button:focus-visible {
+    background: #f1f5f9;
+}
+
+.about-dialog {
+    width: min(520px, 92vw);
+    max-height: 80vh;
+    padding: 20px 22px;
+    overflow: auto;
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.about-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.about-dialog h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.about-dialog h3 {
+    margin: 16px 0 6px;
+    font-size: 14px;
+}
+
+.about-dialog ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.about-dialog li {
+    margin: 3px 0;
+}
+
+.about-dialog a {
+    color: #1d4ed8;
+}
+
+.about-dialog button {
+    margin-top: 16px;
+    padding: 6px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.about-dialog button:hover,
+.about-dialog button:focus-visible {
+    background: #1e293b;
+}
+
+/* ---------- 无脚本提示 ---------- */
+
+.noscript {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 24px;
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+/* ---------- 小屏适配 ---------- */
+
+@media (max-width: 480px) {
+    .status {
+        max-width: calc(100vw - 140px);
+    }
+
+    .layer-info {
+        bottom: 38px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

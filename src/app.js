@@ -290,7 +290,7 @@
             showFeatureInfo(state, feature);
         });
 
-        // 线状要素本身太细，追加一条透明的宽线作为点击热区
+        // 线要素本身太细，追加一条透明的宽线作为点击热区
         if (
             feature.geometry &&
             feature.geometry.type.indexOf('LineString') !== -1 &&
@@ -333,22 +333,9 @@
         });
 
         layerNameEl.textContent = state.config.name;
-        featureInfoEl.textContent = details.length ? details.join(' · ') : describeGeometry(feature);
+        // 没有可展示的属性时不显示几何类型等占位描述，只显示图层名称
+        featureInfoEl.textContent = details.length ? details.join(' · ') : '';
         layerInfoEl.hidden = false;
-    }
-
-    function describeGeometry(feature) {
-        var type = (feature && feature.geometry && feature.geometry.type) || '';
-        if (type.indexOf('LineString') !== -1) {
-            return '线状要素';
-        }
-        if (type.indexOf('Polygon') !== -1) {
-            return '面状要素';
-        }
-        if (type === 'Point' || type === 'MultiPoint') {
-            return '点要素';
-        }
-        return '地图要素';
     }
 
     function hideFeatureInfo() {

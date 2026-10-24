@@ -4,14 +4,14 @@
 
 [![Better Stack Badge](https://uptime.betterstack.com/status-badges/v1/monitor/19iu3.svg)](https://uptime.betterstack.com/?utm_source=status_badge)
 
-一个展示**台湾周边空域与历次台海军事演习范围**的纯静态互动地图，基于 [Leaflet](https://leafletjs.com/) 构建，部署在 GitHub Pages 上：<https://tongyi.tw.cn/>
+一个展示**台湾地区周边空域与历次台海军事演习范围**的纯静态互动地图，基于 [Leaflet](https://leafletjs.com/) 构建，部署在 GitHub Pages 上：<https://tongyi.tw.cn/>
 
 站点无构建步骤：HTML / CSS / JS / GeoJSON 均为静态文件，推到 `main` 分支根目录即发布。
 
 ## 功能
 
-- **底图切换**：OpenStreetMap（默认）、CartoDB 暗色、高德地图、高德卫星影像；通过右上角图层控件切换，底图署名由 Leaflet 版权控件按提供方显示。
-- **9 个专题图层**：台湾地区防空识别区（ADIZ）、禁止限制空域，以及 1996 年以来历次台海演习区域，以线/面样式叠加在地图上；右上角图层控件可单独勾选/取消，默认全部显示。
+- **底图切换**：OpenStreetMap（默认）、Esri 暗色、高德地图、高德卫星影像；通过右上角图层控件切换，底图署名由 Leaflet 版权控件按提供方显示。
+- **9 个专题图层 + 6 个禁限航区图层**：台湾地区防空识别区（ADIZ）、禁止限制空域、1996 年以来历次台海演习区域，以及台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类禁限航区（线状边界数据不纳入）；右上角图层控件可单独勾选/取消。禁止区域、限制区域默认勾选；公路、铁路（高铁）、国家公园、商港默认不勾选，勾选后才加载。全图边框统一 1.5 px；台湾地区相关区域使用蓝色系，军事演习区域使用红色系。
 - **按需加载与稳定叠放**：图层首次勾选时才 `fetch` 对应 GeoJSON（取消勾选后数据保留在内存中）；每个图层使用独立 pane 并固定 z-index，叠放顺序不随请求完成先后变化。
 - **图层信息面板**：点击地图上任意位置后，左下角列出该点覆盖的**所有图层**（多个图层重叠时同时显示，并标注数量）；有 `name` / `date` / `agency` / `activity` 属性的要素会附带显示这些字段。面状区域（含闭合的空域边界）按区域命中，开放线状要素按边界容差命中。点击空白处、按 `Esc` 或点关闭按钮收起。
 - **图例控件**：左上角可折叠图例（基于 Leaflet.Legend），颜色与专题图层样式对应。
@@ -47,6 +47,9 @@ tongyi.tw.cn/
 │   ├── leaflet.legend.js                # 图例控件（MIT）
 │   └── leaflet.legend.css
 ├── geojson/                      # 24 个 GeoJSON 数据文件（详见「数据说明」）
+├── data/
+│   ├── uav_zone_tw_restrictions.geojson   # 禁限航区（DroneMapTW 导出）
+│   └── tw_air_dedup.geojson               # 禁限空域去重后的 12 条边界线
 └── scripts/
     ├── normalize-geojson.py      # 闭合未闭合的线性环（幂等，支持 --check）
     └── validate-geojson.py       # 数据校验脚本（CI 使用）
@@ -54,7 +57,7 @@ tongyi.tw.cn/
 
 ## 本地预览
 
-站点使用 `fetch` 加载 `geojson/` 下的数据，**必须通过 HTTP 访问**（直接双击 `index.html` 用 `file://` 打开会因跨域限制导致图层加载失败）：
+站点使用 `fetch` 加载 `geojson/` 与 `data/` 下的数据，**必须通过 HTTP 访问**（直接双击 `index.html` 用 `file://` 打开会因跨域限制导致图层加载失败）：
 
 ```bash
 cd tongyi.tw.cn
@@ -73,7 +76,7 @@ python3 -m http.server 8080
 | 文件 | 图层名称 |
 | --- | --- |
 | `geojson/adiz.geojson` | 台湾地区防空识别区（ADIZ） |
-| `geojson/tw_air.geojson` | 台湾地区禁止、限制空域（92 个要素） |
+| `data/tw_air_dedup.geojson` | 台湾地区禁止、限制空域（与按类型划分的禁限航区去重后保留 12 条线；原 `geojson/tw_air.geojson` 的 92 条仍保留） |
 | `geojson/1996.geojson` | 1996 年 3 月 · 台湾海峡陆海空三军联合作战演习 |
 | `geojson/2022.geojson` | 2022 年 8 月 · 多军兵种联合战备警巡和实战化演练 |
 | `geojson/202304.geojson` | 2023 年 4 月 · 环台岛战备警巡和“联合利剑”演习 |
@@ -81,6 +84,12 @@ python3 -m http.server 8080
 | `geojson/2024A.geojson` | 2024 年 5 月 · “联合利剑—2024A”演习 |
 | `geojson/2024B.geojson` | 2024 年 10 月 · “联合利剑—2024B”演习 |
 | `geojson/2025B.geojson` | 2025 年 12 月 · “正义使命—2025”演习 |
+| `data/uav_zone_red.geojson` | 台湾地区禁止区域（4,756 个，不含公路、铁路） |
+| `data/uav_zone_yellow.geojson` | 台湾地区限制区域（122 个） |
+| `data/uav_zone_highways.geojson` | 台湾地区公路（92 个，默认不勾选） |
+| `data/uav_zone_railways.geojson` | 台湾地区铁路（高铁，46 个，默认不勾选） |
+| `data/uav_zone_national_parks.geojson` | 台湾地区国家公园（66 个，默认不勾选） |
+| `data/uav_zone_commercial_ports.geojson` | 台湾地区商港（30 个，默认不勾选） |
 
 ### 预留 / 暂未渲染的 15 个图层
 
@@ -118,8 +127,8 @@ python3 -m http.server 8080
 
 ### 疑似异常数据
 
-- `geojson/rcr_m.geojson`：经度约 **12.02–12.61**，明显偏离台湾周边（该区域应约为 118–122°E），疑似坐标录入/解析错误。该图层当前未渲染；`scripts/validate-geojson.py` 会对其输出 warning。
-- `geojson/tw.geojson`：坐标范围约 **118.28–118.47°E、24.39–24.53°N**，落在金门一带而非台湾本岛，疑似只覆盖金门区域。该图层当前未渲染。
+- `geojson/rcr_m.geojson`：经度约 **12.02–12.61**，明显偏离台湾地区周边（该区域应约为 118–122°E），疑似坐标录入/解析错误。该图层当前未渲染；`scripts/validate-geojson.py` 会对其输出 warning。
+- `geojson/tw.geojson`：坐标范围约 **118.28–118.47°E、24.39–24.53°N**，落在金门一带而非台湾岛，疑似只覆盖金门区域。该图层当前未渲染。
 
 ## 开发与校验
 
@@ -176,7 +185,9 @@ npx --yes html-validate@9 index.html
 
 - 15 个 GeoJSON 图层尚未渲染（部分为预留数据），数据文件与页面配置可能不同步。
 - GeoJSON 顶层结构不统一（`Feature` 与 `FeatureCollection` 混用），依赖读取方兼容。
-- 底图依赖第三方瓦片服务（OpenStreetMap、CARTO、高德），其可用性、精度、配额与使用条款由第三方决定，离线环境下底图不可用。天地图仅在 `src/leaflet.ChineseTmsProviders.js` 中提供接入方式，默认未启用（需自行申请 `tk` 密钥）。
+- 底图依赖第三方瓦片服务（OpenStreetMap、Esri、高德），其可用性、精度、配额与使用条款由第三方决定，离线环境下底图不可用。天地图仅在 `src/leaflet.ChineseTmsProviders.js` 中提供接入方式，默认未启用（需自行申请 `tk` 密钥）。
+- 禁限航区数据来自 DroneMapTW 公开瓦片导出，DroneMapTW 未声明开放数据授权、原始资料版权属台湾地区民航主管部门；公开部署/再分发前请先确认授权并署名。按要求不纳入线状边界数据；公开瓦片中另有 11 个源要素缺失。主页面按台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类拆分加载；台湾地区公路、铁路（高铁）、国家公园、商港默认不勾选。
+- 「台湾地区禁止、限制空域」是线数据（92 条线，仅 28 条闭合），无法与禁限航区多边形做严格几何去重。当前 `data/tw_air_dedup.geojson` 采用近似去重：一条空域线 ≥99% 的长度落在禁限航区外扩约 50 m 范围内，即视为重复并删除；共删除 80 条、保留 12 条。原始 `geojson/tw_air.geojson` 未修改。
 - 坐标纠偏为经验算法，国内偏移底图与 WGS-84 数据之间可能存在残余偏移。
 - 无构建流程与自动化测试框架，仅有静态校验（GeoJSON + HTML）。
 - 项目未声明浏览器兼容范围；Leaflet 1.9 支持现代浏览器。

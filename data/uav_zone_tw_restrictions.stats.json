@@ -1,0 +1,19 @@
+{
+  "features": 5016,
+  "restrictionZone": {
+    "黄区": 122,
+    "红区": 4894
+  },
+  "agencies": 23,
+  "mergedFeatures": 64,
+  "removedByDedupe": 65,
+  "bbox": [
+    114.214211,
+    10.215894,
+    122.124882,
+    26.348652
+  ],
+  "bytes": 7330277,
+  "gzipBytes": 1446628,
+  "duplicateGroups": 64
+}

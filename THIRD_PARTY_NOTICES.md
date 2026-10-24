@@ -53,7 +53,7 @@
 | 服务 | 站点 | 条款/署名 |
 | --- | --- | --- |
 | OpenStreetMap | <https://www.openstreetmap.org/> | 数据 © OpenStreetMap contributors，ODbL；瓦片使用政策见 <https://operations.osmfoundation.org/policies/tiles/> |
-| CARTO（Dark Matter 底图） | <https://carto.com/> | 见 CARTO 服务条款与署名要求 |
+| Esri（World Dark Gray Canvas 底图） | <https://www.esri.com/> | 见 Esri 服务条款与署名要求；页面已显示 Esri/OSM 署名 |
 | 高德地图（GaoDe） | <https://www.amap.com/> | 需遵守高德开放平台服务条款，页面应保留其署名 |
 | 天地图（TianDiTu） | <https://www.tianditu.gov.cn/> | 需自行申请 `tk` 密钥并遵守服务条款 |
 

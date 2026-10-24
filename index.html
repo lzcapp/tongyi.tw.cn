@@ -5,30 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>统一，台湾！</title>
-    <meta name="description" content="在互动地图上查看台湾周边防空识别区、禁止限制空域，以及 1996 年以来历次台海军事演习区域。">
+    <meta name="description" content="在互动地图上查看台湾地区周边防空识别区、禁止限制空域，以及 1996 年以来历次台海军事演习区域。">
     <meta name="color-scheme" content="light">
     <meta name="theme-color" content="#0f172a">
     <link rel="canonical" href="https://tongyi.tw.cn/">
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://tile.openstreetmap.org">
-    <link rel="preconnect" href="https://basemaps.cartocdn.com">
+    <link rel="preconnect" href="https://server.arcgisonline.com">
     <link rel="preconnect" href="https://webrd01.is.autonavi.com">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="zh_CN">
     <meta property="og:site_name" content="统一，台湾！">
     <meta property="og:title" content="统一，台湾！">
-    <meta property="og:description" content="台湾周边防空识别区、禁止限制空域与历次台海军事演习区域的互动地图。">
+    <meta property="og:description" content="台湾地区周边防空识别区、禁止限制空域与历次台海军事演习区域的互动地图。">
     <meta property="og:url" content="https://tongyi.tw.cn/">
     <link rel="stylesheet" href="./src/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="./src/leaflet.legend.css">
-    <link rel="stylesheet" href="./src/style.css?v=20261024-2">
+    <link rel="stylesheet" href="./src/style.css?v=20261024-16">
 </head>
 
 <body>
-    <h1 class="visually-hidden">台湾周边空域与历次台海军事演习互动地图</h1>
+    <h1 class="visually-hidden">台湾地区周边空域与历次台海军事演习互动地图</h1>
 
     <main>
-        <section id="map" aria-label="台湾周边空域与历次台海军事演习互动地图"></section>
+        <section id="map" aria-label="台湾地区周边空域与历次台海军事演习互动地图"></section>
     </main>
 
     <div class="status" id="status" role="status" aria-live="polite" aria-atomic="true" hidden>
@@ -48,16 +48,18 @@
 
     <dialog class="about-dialog" id="aboutDialog" aria-labelledby="aboutTitle">
         <h2 id="aboutTitle">关于本页</h2>
-        <p>本页在互动地图上叠加展示台湾周边防空识别区、禁止限制空域，以及 1996 年以来历次台海军事演习区域。</p>
+        <p>本页在互动地图上叠加展示台湾地区周边防空识别区、禁止限制空域、1996 年以来历次台海军事演习区域，以及按类型划分的禁限航区。</p>
         <h3>数据说明</h3>
         <ul>
             <li>数据整理自公开资料，仅供参考；数据更新至 2026 年 2 月，最新状态以项目仓库提交为准。</li>
             <li>各区域的边界与范围仅作示意，不构成任何官方立场或权威依据。</li>
-            <li>底图来自 OpenStreetMap、CARTO 与高德地图，版权归各提供方所有；使用即表示遵守其服务条款。</li>
+            <li>底图来自 OpenStreetMap、Esri 与高德地图，版权归各提供方所有；使用即表示遵守其服务条款。</li>
+            <li>禁限航区数据来自 DroneMapTW（依台湾地区民航主管部门资料整理），按台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港分类展示；线状边界不纳入。仅供示意，使用或再分发前请确认授权。</li>
+            <li>「台湾地区禁止、限制空域」图层已按位置与按类型划分的禁限航区去重，原始 92 条线数据仍保留在仓库。</li>
         </ul>
         <h3>第三方组件</h3>
         <p>Leaflet、Leaflet.Legend、Leaflet.ChineseTmsProviders，许可证信息见项目仓库中的 THIRD_PARTY_NOTICES.md。</p>
-        <p class="about-dialog__version">版本：2026-10-24-2（图层命中支持多环区域）</p>
+        <p class="about-dialog__version">版本：2026-10-24-16（英尺表述）</p>
         <p><a href="https://github.com/lzcapp/tongyi.tw.cn" target="_blank" rel="noopener">项目仓库</a></p>
         <form method="dialog">
             <button type="submit">关闭</button>
@@ -72,7 +74,7 @@
     <script src="./src/leaflet.ChineseTmsProviders.js"></script>
     <script src="./src/leaflet.mapCorrection.min.js"></script>
     <script src="./src/leaflet.legend.js"></script>
-    <script src="./src/app.js?v=20261024-2"></script>
+    <script src="./src/app.js?v=20261024-16"></script>
 </body>
 
 </html>

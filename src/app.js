@@ -1,6 +1,6 @@
 /* global L */
 /**
- * 台湾周边空域互动地图
+ * 台湾地区空域互动地图
  *
  * 图层 / 图例 / 样式集中在本文件的 LAYER_CONFIG 中维护，新增图层时只需追加一项配置。
  * 图层数据按需加载：复选框勾选后才 fetch 对应 GeoJSON，取消勾选后数据保留在内存中。
@@ -8,21 +8,70 @@
 (function () {
     'use strict';
 
-    var APP_VERSION = '2026-10-24-2';
+    var APP_VERSION = '2026-10-24-16';
     console.info('tongyi.tw.cn app version:', APP_VERSION);
 
     var DEFAULT_VIEW = { center: [24, 120.9], zoom: 6 };
 
     var OSM_ATTRIBUTION =
         '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
-    var CARTO_ATTRIBUTION =
-        OSM_ATTRIBUTION +
-        ' &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+    var ESRI_ATTRIBUTION =
+        'Tiles &copy; <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a> — Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community';
     var AMAP_ATTRIBUTION =
         '&copy; <a href="https://www.amap.com/" target="_blank" rel="noopener">高德地图</a>';
 
     // 底图瓦片失败提示状态（提前声明，瓦片请求可能早于后续初始化完成）
     var tileWarning = { active: false, dismissed: false, label: '' };
+
+    // 全图统一边框宽度
+    var BORDER_WEIGHT = 1.5;
+    var BORDER_OPACITY = 0.55;
+    var FILL_OPACITY = 0.12;
+    var LEGEND_FILL_OPACITY = 0.35;
+    var LEGEND_LINE_OPACITY = 0.8;
+
+    function areaStyle(fillColor, borderColor) {
+        return {
+            color: borderColor,
+            weight: BORDER_WEIGHT,
+            opacity: BORDER_OPACITY,
+            fillColor: fillColor,
+            fillOpacity: FILL_OPACITY,
+            fillRule: 'nonzero'
+        };
+    }
+
+    function lineStyle(color, dashArray) {
+        return {
+            color: color,
+            weight: BORDER_WEIGHT,
+            opacity: BORDER_OPACITY,
+            dashArray: dashArray,
+            fill: false
+        };
+    }
+
+    function areaLegend(label, fillColor) {
+        return {
+            label: label,
+            type: 'rectangle',
+            fillColor: fillColor,
+            fillOpacity: LEGEND_FILL_OPACITY,
+            stroke: false
+        };
+    }
+
+    function lineLegend(label, color, dashArray) {
+        return {
+            label: label,
+            type: 'polyline',
+            color: color,
+            weight: BORDER_WEIGHT,
+            opacity: LEGEND_LINE_OPACITY,
+            dashArray: dashArray,
+            stroke: true
+        };
+    }
 
     // ---------------------------------------------------------------------
     // 图层配置（顺序即叠放顺序：数组越靠后，绘制层级越高）
@@ -32,110 +81,122 @@
             id: 'adiz',
             name: '台湾地区防空识别区（ADIZ）',
             file: './geojson/adiz.geojson',
-            style: { color: '#9985a7', weight: 2, opacity: 0.6, dashArray: '10, 0, 0, 10', fill: false },
-            legend: {
-                label: '台湾地区防空识别区（ADIZ）',
-                type: 'polyline',
-                color: '#9985a7',
-                weight: 2,
-                dashArray: '10, 0, 0, 10',
-                stroke: true
-            }
+            style: lineStyle('#1e40af', '10, 0, 0, 10'),
+            legend: lineLegend('台湾地区防空识别区（ADIZ）', '#1e40af', '10, 0, 0, 10')
         },
         {
             id: 'tw_air',
             name: '台湾地区禁止、限制空域',
-            file: './geojson/tw_air.geojson',
-            style: { color: '#3488ff', weight: 3, opacity: 1, fill: false },
-            legend: {
-                label: '台湾地区禁止、限制空域',
-                type: 'polyline',
-                color: '#3488ff',
-                weight: 3,
-                stroke: true
-            }
+            file: './data/tw_air_dedup.geojson',
+            style: lineStyle('#1d4ed8', '6, 6'),
+            legend: lineLegend('台湾地区禁止、限制空域', '#1d4ed8', '6, 6')
         },
         {
             id: '1996',
             name: '1996年3月 · 台湾海峡陆海空三军联合作战演习',
             file: './geojson/1996.geojson',
-            style: { color: '#a4a2a2', weight: 3, fillColor: '#a4a2a2', fillOpacity: 0.3, fillRule: 'nonzero' },
-            legend: { label: '1996年3月 · 台湾海峡陆海空三军联合作战演习', type: 'rectangle', fillColor: '#a4a2a2', fillOpacity: 0.3, stroke: false }
+            style: areaStyle('#7f1d1d', '#450a0a'),
+            legend: areaLegend('1996年3月 · 台湾海峡陆海空三军联合作战演习', '#7f1d1d')
         },
         {
             id: '2022',
             name: '2022年8月 · 多军兵种联合战备警巡和实战化演练',
             file: './geojson/2022.geojson',
-            style: { color: '#ab9c9b', weight: 3, fillColor: '#ab9c9b', fillOpacity: 0.3, fillRule: 'nonzero' },
-            legend: {
-                label: '2022年8月 · 多军兵种联合战备警巡和实战化演练',
-                type: 'rectangle',
-                fillColor: '#ab9c9b',
-                fillOpacity: 0.3,
-                stroke: false
-            }
+            style: areaStyle('#991b1b', '#7f1d1d'),
+            legend: areaLegend('2022年8月 · 多军兵种联合战备警巡和实战化演练', '#991b1b')
         },
         {
             id: '202304',
             name: '2023年4月 · 环台岛战备警巡和“联合利剑”演习',
             file: './geojson/202304.geojson',
-            style: { color: '#b29594', weight: 3, fillColor: '#b29594', fillOpacity: 0.3, fillRule: 'nonzero' },
-            legend: {
-                label: '2023年4月/8月 · 环台岛战备警巡、“联合利剑”演习与联合演训',
-                type: 'rectangle',
-                fillColor: '#b29594',
-                fillOpacity: 0.3,
-                stroke: false
-            }
+            style: areaStyle('#b91c1c', '#991b1b'),
+            legend: areaLegend('2023年4月/8月 · 环台岛战备警巡、“联合利剑”演习与联合演训', '#b91c1c')
         },
         {
             id: '202308',
             name: '2023年8月 · 海空联合战备警巡和联合演训',
             file: './geojson/202308.geojson',
-            style: { color: '#b29594', weight: 3, fillColor: '#b29594', fillOpacity: 0.3, fillRule: 'nonzero' },
-            // 与 2023 年 4 月共用图例，避免重复条目
+            style: areaStyle('#b91c1c', '#991b1b'),
+            // 与 2023 年 4 月共用图例
             legend: null
         },
         {
             id: '2024A',
             name: '2024年5月 · “联合利剑—2024A”演习',
             file: './geojson/2024A.geojson',
-            style: { color: '#b98f8d', weight: 3, fillColor: '#b98f8d', fillOpacity: 0.3, fillRule: 'nonzero' },
-            legend: {
-                label: '2024年5月 · “联合利剑—2024A”演习',
-                type: 'rectangle',
-                fillColor: '#b98f8d',
-                fillOpacity: 0.3,
-                stroke: false
-            }
+            style: areaStyle('#dc2626', '#b91c1c'),
+            legend: areaLegend('2024年5月 · “联合利剑—2024A”演习', '#dc2626')
         },
         {
             id: '2024B',
             name: '2024年10月 · “联合利剑—2024B”演习',
             file: './geojson/2024B.geojson',
-            style: { color: '#c08986', weight: 3, fillColor: '#c08986', fillOpacity: 0.3, fillRule: 'nonzero' },
-            legend: {
-                label: '2024年10月 · “联合利剑—2024B”演习',
-                type: 'rectangle',
-                fillColor: '#c08986',
-                fillOpacity: 0.3,
-                stroke: false
-            }
+            style: areaStyle('#e11d48', '#be123c'),
+            legend: areaLegend('2024年10月 · “联合利剑—2024B”演习', '#e11d48')
         },
         {
             id: '2025B',
             name: '2025年12月 · “正义使命—2025”演习',
             file: './geojson/2025B.geojson',
-            style: { color: '#c8827e', weight: 3, fillColor: '#c8827e', fillOpacity: 0.3, fillRule: 'nonzero' },
-            legend: {
-                label: '2025年12月 · “正义使命—2025”演习',
-                type: 'rectangle',
-                fillColor: '#c8827e',
-                fillOpacity: 0.3,
-                stroke: false
-            }
+            style: areaStyle('#ef4444', '#dc2626'),
+            legend: areaLegend('2025年12月 · “正义使命—2025”演习', '#ef4444')
+        },
+        {
+            id: 'restricted_prohibited',
+            name: '台湾地区禁止区域',
+            file: './data/uav_zone_red.geojson',
+            defaultVisible: true,
+            canvas: true,
+            style: areaStyle('#1e40af', '#1e3a8a'),
+            legend: areaLegend('台湾地区禁止区域', '#1e40af')
+        },
+        {
+            id: 'restricted_limited',
+            name: '台湾地区限制区域',
+            file: './data/uav_zone_yellow.geojson',
+            defaultVisible: true,
+            canvas: true,
+            style: areaStyle('#3b82f6', '#1d4ed8'),
+            legend: areaLegend('台湾地区限制区域', '#3b82f6')
+        },
+        {
+            id: 'road',
+            name: '台湾地区公路',
+            file: './data/uav_zone_highways.geojson',
+            defaultVisible: false,
+            canvas: true,
+            style: areaStyle('#60a5fa', '#2563eb'),
+            legend: areaLegend('台湾地区公路', '#60a5fa')
+        },
+        {
+            id: 'rail',
+            name: '台湾地区铁路（高铁）',
+            file: './data/uav_zone_railways.geojson',
+            defaultVisible: false,
+            canvas: true,
+            style: areaStyle('#4f46e5', '#3730a3'),
+            legend: areaLegend('台湾地区铁路（高铁）', '#4f46e5')
+        },
+        {
+            id: 'national_park',
+            name: '台湾地区国家公园',
+            file: './data/uav_zone_national_parks.geojson',
+            defaultVisible: false,
+            canvas: true,
+            style: areaStyle('#0e7490', '#155e75'),
+            legend: areaLegend('台湾地区国家公园', '#0e7490')
+        },
+        {
+            id: 'commercial_port',
+            name: '台湾地区商港',
+            file: './data/uav_zone_commercial_ports.geojson',
+            defaultVisible: false,
+            canvas: true,
+            style: areaStyle('#0ea5e9', '#0369a1'),
+            legend: areaLegend('台湾地区商港', '#0ea5e9')
         }
     ];
+
 
     // ---------------------------------------------------------------------
     // UI 元素
@@ -166,11 +227,14 @@
         maxZoom: 19,
         attribution: OSM_ATTRIBUTION
     });
-    var carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        maxZoom: 19,
-        attribution: CARTO_ATTRIBUTION
-    });
+    var esriDark = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+        {
+            maxZoom: 19,
+            maxNativeZoom: 16,
+            attribution: ESRI_ATTRIBUTION
+        }
+    );
     var amap = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
         maxZoom: 18,
         attribution: AMAP_ATTRIBUTION
@@ -188,14 +252,18 @@
 
     var baseLayers = {
         OpenStreetMap: osm,
-        'CartoDB 暗色': carto,
+        'Esri 暗色': esriDark,
         '高德地图': amap,
         '高德卫星影像': amapSatellite
     };
 
     // 提前注册瓦片失败监听，避免首屏瓦片请求早于监听注册
     watchTileFailures(osm, 'OpenStreetMap');
-    watchTileFailures(carto, 'CartoDB 暗色');
+    watchTileFailures(esriDark, 'Esri 暗色');
+
+    map.attributionControl.addAttribution(
+        '禁限航区数据：<a href="https://dronemap.boggy.tw/" target="_blank" rel="noopener">DroneMapTW</a> / 台湾地区民航主管部门'
+    );
 
     var initialView = readViewFromHash() || DEFAULT_VIEW;
     map.setView(initialView.center, initialView.zoom);
@@ -222,6 +290,7 @@
             config: config,
             group: group,
             paneName: paneName,
+            renderer: config.canvas ? L.canvas({ pane: paneName }) : null,
             loaded: false,
             loading: false,
             error: null
@@ -235,10 +304,13 @@
 
     L.control.layers(baseLayers, overlayLayers, { collapsed: true, position: 'topright' }).addTo(map);
 
-    // 默认显示全部图层；在图层控件创建之后添加，保证复选框状态同步
+    // 默认显示图层（禁限航区中的公路/国家公园/商港默认不勾选，勾选后才加载）
     LAYER_CONFIG.forEach(function (config) {
-        overlayLayers[config.name].addTo(map);
+        if (config.defaultVisible !== false) {
+            overlayLayers[config.name].addTo(map);
+        }
     });
+
 
     function requestLayer(state) {
         if (state.loaded || state.loading) {
@@ -262,12 +334,16 @@
                 return response.json();
             })
             .then(function (data) {
-                var geoLayer = L.geoJSON(data, {
+                var geoOptions = {
                     pane: state.paneName,
                     style: state.config.style,
                     // 要素不单独响应点击，统一在 map click 中计算该点覆盖的所有图层
                     interactive: false
-                });
+                };
+                if (state.renderer) {
+                    geoOptions.renderer = state.renderer;
+                }
+                var geoLayer = L.geoJSON(data, geoOptions);
                 geoLayer.addTo(state.group);
                 state.layer = geoLayer;
                 state.loaded = true;
@@ -316,6 +392,12 @@
             var geometry = featureLayer.feature.geometry;
             if (!geometry) {
                 return;
+            }
+            if (featureLayer.getBounds) {
+                var bounds = featureLayer.getBounds();
+                if (bounds.isValid() && !bounds.contains(latlng)) {
+                    return;
+                }
             }
             if (geometryHit(geometry, latlng)) {
                 matched = featureLayer.feature;
@@ -423,17 +505,20 @@
         var properties = (feature && feature.properties) || {};
         var details = [];
 
-        ['name', 'date', 'agency', 'activity'].forEach(function (key) {
-            var value = properties[key];
+        function addDetail(value) {
             if (typeof value !== 'string') {
                 return;
             }
             value = value.trim();
             // 部分数据的 name 字段是无意义的占位值
-            if (!value || value.toLowerCase() === 'path') {
+            if (!value || value.toLowerCase() === 'path' || details.indexOf(value) !== -1) {
                 return;
             }
             details.push(value);
+        }
+
+        ['name', 'zoneName', 'date', 'agency', 'activity', 'agencyName'].forEach(function (key) {
+            addDetail(properties[key]);
         });
 
         return details.join(' · ');
@@ -655,18 +740,20 @@
         if (!config.legend) {
             return;
         }
-        var item = {
-            label: config.legend.label,
-            type: config.legend.type,
-            color: config.legend.color,
-            weight: config.legend.weight,
-            stroke: config.legend.stroke,
-            fillColor: config.legend.fillColor,
-            fillOpacity: config.legend.fillOpacity,
-            // 图例插件用 Canvas setLineDash 绘制虚线，需要数字数组而不是 CSS 字符串
-            dashArray: parseDashArray(config.legend.dashArray)
-        };
-        legendItems.push(item);
+        var entries = Array.isArray(config.legend) ? config.legend : [config.legend];
+        entries.forEach(function (entry) {
+            legendItems.push({
+                label: entry.label,
+                type: entry.type,
+                color: entry.color,
+                weight: entry.weight,
+                stroke: entry.stroke,
+                fillColor: entry.fillColor,
+                fillOpacity: entry.fillOpacity,
+                // 图例插件用 Canvas setLineDash 绘制虚线，需要数字数组而不是 CSS 字符串
+                dashArray: parseDashArray(entry.dashArray)
+            });
+        });
     });
 
     L.control

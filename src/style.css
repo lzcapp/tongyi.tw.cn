@@ -334,6 +334,11 @@ body {
     color: #1d4ed8;
 }
 
+.about-dialog__version {
+    color: var(--text-faint);
+    font-size: 12px;
+}
+
 .about-dialog button {
     margin-top: 16px;
     padding: 6px 16px;

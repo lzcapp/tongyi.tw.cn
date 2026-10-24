@@ -75,7 +75,8 @@ body {
     position: fixed;
     top: 12px;
     left: 50%;
-    z-index: 1200;
+    /* 低于 Leaflet 控件（1000），避免移动端提示条盖住展开的图层控件 */
+    z-index: 900;
     display: flex;
     align-items: flex-start;
     gap: 10px;
@@ -164,7 +165,7 @@ body {
     bottom: 44px;
     left: 12px;
     z-index: 1100;
-    width: min(300px, calc(100vw - 24px));
+    width: min(320px, calc(100vw - 24px));
     padding: 12px 38px 12px 14px;
     border: 1px solid var(--panel-border);
     border-radius: var(--panel-radius);
@@ -175,6 +176,20 @@ body {
 
 .layer-info[hidden] {
     display: none;
+}
+
+.layer-info__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: min(50vh, 380px);
+    overflow-y: auto;
+}
+
+.layer-info__item + .layer-info__item {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--panel-border);
 }
 
 .layer-info__title {
@@ -192,7 +207,7 @@ body {
 }
 
 .layer-info__detail {
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     color: var(--text-muted);
     font-size: 13px;
 }
@@ -236,6 +251,22 @@ body {
 .leaflet-legend-title {
     color: var(--text);
     font-weight: 600;
+}
+
+/* 官方名称较长，允许在面板内换行而不是横向撑破 */
+.leaflet-legend .leaflet-legend-item span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* 图层控件中的长图层名同样允许换行 */
+.leaflet-control-layers-expanded {
+    max-width: min(380px, calc(100vw - 20px));
+}
+
+.leaflet-control-layers label span {
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* ---------- 说明按钮 / 对话框 ---------- */
@@ -342,6 +373,13 @@ body {
 @media (max-width: 480px) {
     .status {
         max-width: calc(100vw - 140px);
+        flex-wrap: wrap;
+    }
+
+    .status__actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-end;
     }
 
     .layer-info {

@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    var APP_VERSION = '2026-10-24-36';
+    var APP_VERSION = '2026-10-24-38';
     console.info('tongyi.tw.cn app version:', APP_VERSION);
 
     var DEFAULT_VIEW = { center: [24, 120.9], zoom: 6 };
@@ -432,20 +432,23 @@
             if (!state.loaded || !state.layer || !map.hasLayer(state.group)) {
                 return;
             }
-            var feature = findFeatureAt(state, latlng);
-            if (feature) {
-                matches.push({ config: config, feature: feature });
+            var features = findFeaturesAt(state, latlng);
+            if (features.length) {
+                matches.push({ config: config, features: features });
             }
         });
 
         return matches;
     }
 
-    function findFeatureAt(state, latlng) {
-        var matched = null;
+    // 返回该点命中的全部要素，而不是只返回第一个；
+    // 同一图层内多个区域重叠时也要全部展示。
+    function findFeaturesAt(state, latlng) {
+        var matched = [];
+        var seen = {};
 
         state.layer.eachLayer(function (featureLayer) {
-            if (matched || !featureLayer.feature) {
+            if (!featureLayer.feature) {
                 return;
             }
             var geometry = featureLayer.feature.geometry;
@@ -458,9 +461,16 @@
                     return;
                 }
             }
-            if (geometryHit(geometry, latlng)) {
-                matched = featureLayer.feature;
+            if (!geometryHit(geometry, latlng)) {
+                return;
             }
+            var props = featureLayer.feature.properties || {};
+            var key = props.id != null ? String(props.id) : (props.zoneName || '') + '|' + JSON.stringify(geometry);
+            if (seen[key]) {
+                return;
+            }
+            seen[key] = true;
+            matched.push(featureLayer.feature);
         });
 
         return matched;
@@ -583,32 +593,85 @@
         return details.join(' · ');
     }
 
+    function getLayerSwatch(config) {
+        var entry = config.legend;
+        if (Array.isArray(entry)) {
+            entry = entry[0];
+        }
+        if (!entry) {
+            entry = config.style;
+        }
+        if (!entry) {
+            return null;
+        }
+        var fill = entry.fillColor || null;
+        var stroke = entry.color || entry.fillColor || null;
+        if (!fill && !stroke) {
+            return null;
+        }
+        return {
+            fill: fill,
+            stroke: stroke,
+            line: !fill && !!stroke
+        };
+    }
+
     function showLayerInfo(matches) {
         if (!matches.length) {
             hideLayerInfo();
             return;
         }
 
-        layerInfoTitleEl.textContent =
-            matches.length > 1 ? '此处重叠的图层（' + matches.length + '）' : '当前图层';
+        var totalFeatures = matches.reduce(function (sum, match) {
+            return sum + match.features.length;
+        }, 0);
+        if (matches.length > 1) {
+            layerInfoTitleEl.textContent =
+                '此处重叠的图层（' + matches.length + '）' +
+                (totalFeatures > matches.length ? ' · 区域（' + totalFeatures + '）' : '');
+        } else if (totalFeatures > 1) {
+            layerInfoTitleEl.textContent = '当前图层 · 重叠区域（' + totalFeatures + '）';
+        } else {
+            layerInfoTitleEl.textContent = '当前图层';
+        }
         layerInfoListEl.textContent = '';
 
         matches.forEach(function (match) {
             var item = document.createElement('li');
             item.className = 'layer-info__item';
 
-            var name = document.createElement('p');
+            var nameRow = document.createElement('p');
+            nameRow.className = 'layer-info__name-row';
+
+            var swatchInfo = getLayerSwatch(match.config);
+            if (swatchInfo) {
+                var swatch = document.createElement('span');
+                swatch.className = 'layer-info__swatch' + (swatchInfo.line ? ' layer-info__swatch--line' : '');
+                swatch.setAttribute('aria-hidden', 'true');
+                if (swatchInfo.line) {
+                    swatch.style.borderTopColor = swatchInfo.stroke;
+                } else {
+                    swatch.style.background = swatchInfo.fill || 'transparent';
+                    swatch.style.borderColor = swatchInfo.stroke || swatchInfo.fill;
+                }
+                nameRow.appendChild(swatch);
+            }
+
+            var name = document.createElement('span');
             name.className = 'layer-info__name';
             name.textContent = match.config.name;
-            item.appendChild(name);
+            nameRow.appendChild(name);
+            item.appendChild(nameRow);
 
-            var detailText = formatFeatureDetails(match.feature);
-            if (detailText) {
-                var detail = document.createElement('p');
-                detail.className = 'layer-info__detail';
-                detail.textContent = detailText;
-                item.appendChild(detail);
-            }
+            match.features.forEach(function (feature) {
+                var detailText = formatFeatureDetails(feature);
+                if (detailText) {
+                    var detail = document.createElement('p');
+                    detail.className = 'layer-info__detail';
+                    detail.textContent = detailText;
+                    item.appendChild(detail);
+                }
+            });
 
             layerInfoListEl.appendChild(item);
         });

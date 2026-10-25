@@ -410,3 +410,29 @@ body {
 .map-theme-dark .leaflet-pane[class*="leaflet-layer-"] {
     filter: brightness(1.3) saturate(1.12);
 }
+
+/* ---------- 图层信息面板颜色标签 ---------- */
+.layer-info__name-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.layer-info__swatch {
+    flex: 0 0 auto;
+    width: 11px;
+    height: 11px;
+    border: 2px solid transparent;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.layer-info__swatch--line {
+    width: 14px;
+    height: 0;
+    border: 0;
+    border-top: 2px solid currentColor;
+    border-radius: 0;
+}

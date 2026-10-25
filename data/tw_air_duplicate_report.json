@@ -1,0 +1,63 @@
+{
+  "removed": [
+    {
+      "index": 1,
+      "coverage": 1.0,
+      "matchedLayer": "aip_rcr_missing.geojson",
+      "bounds": [
+        121.366667,
+        26.3,
+        122.716667,
+        27.333333
+      ]
+    },
+    {
+      "index": 5,
+      "coverage": 1.0,
+      "matchedLayer": "aip_rcr_missing.geojson",
+      "bounds": [
+        122.083333,
+        23.0,
+        122.633333,
+        23.716667
+      ]
+    },
+    {
+      "index": 6,
+      "coverage": 1.0,
+      "matchedLayer": "aip_rcr_missing.geojson",
+      "bounds": [
+        119.424722,
+        22.581667,
+        119.758056,
+        22.915
+      ]
+    },
+    {
+      "index": 7,
+      "coverage": 1.0,
+      "matchedLayer": "aip_rcr_missing.geojson",
+      "bounds": [
+        119.424722,
+        22.581667,
+        119.758056,
+        22.915
+      ]
+    },
+    {
+      "index": 10,
+      "coverage": 1.0,
+      "matchedLayer": "aip_rcr_missing.geojson",
+      "bounds": [
+        120.991389,
+        21.081389,
+        121.641389,
+        21.598056
+      ]
+    }
+  ],
+  "remaining": 7,
+  "criterion": "line >=99% length within other layer buffered 0.0005 deg",
+  "original": 92,
+  "removedTotal": 85
+}

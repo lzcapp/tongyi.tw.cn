@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    var APP_VERSION = '2026-10-24-22';
+    var APP_VERSION = '2026-10-24-23';
     console.info('tongyi.tw.cn app version:', APP_VERSION);
 
     var DEFAULT_VIEW = { center: [24, 120.9], zoom: 6 };

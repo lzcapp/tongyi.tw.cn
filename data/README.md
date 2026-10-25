@@ -97,9 +97,9 @@ DroneMapTW 站点未声明开放数据授权条款，原始资料版权属台湾
 ## 与“台湾地区禁止、限制空域”图层去重
 
 - 原始空域线数据：`geojson/tw_air.geojson`（92 条线，保持原样）
-- 去重结果：`data/tw_air_dedup.geojson`（保留 12 条线）
-- 去重规则：一条空域线的 ≥99% 长度落在禁限航区外扩约 50 m 范围内，视为与禁限航区重复并删除；保留禁限航区
-- 删除明细：`data/tw_air_dedupe_report.json`（80 条，含原索引、覆盖比例、bounds）
+- 去重结果：`data/tw_air_dedup.geojson`（保留 7 条线）
+- 去重规则：一条空域线的 ≥99% 长度落在禁限航区或 AIP 补全限航区外扩约 50 m 范围内，视为重复并删除
+- 删除明细：`data/tw_air_dedupe_report.json`（80 条）与 `data/tw_air_duplicate_report.json`（后续对 AIP 图层去除的 5 条）
 - 主页面当前使用去重后的 `data/tw_air_dedup.geojson`
 
 注意：这是近似去重，因为原空域图层是线数据（92 条线中仅 28 条闭合），无法直接做严格的面积包含判断。

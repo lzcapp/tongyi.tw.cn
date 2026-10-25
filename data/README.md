@@ -12,7 +12,7 @@ DroneMapTW（<https://dronemap.boggy.tw/>）公开矢量瓦片图层 `uav_zone` 
 | `uav_zone_tw_restrictions.geojson` | **仅禁限航区**（禁止/限制），已按几何去重（5,016 个要素） |
 | `uav_zone_tw_restrictions.geojson.gz` | 上述文件的 gzip 压缩版（1.4 MB） |
 | `uav_zone_tw_restrictions.stats.json` | 飞行限制版本统计 |
-| `uav_zone_red.geojson` | 台湾地区禁止区域（4,756 个，去重后，不含公路、铁路） |
+| `uav_zone_red.geojson` | 台湾地区禁止区域（4,753 个，去重后，不含公路、铁路；基90/基92/苗77 已隐藏） |
 | `uav_zone_yellow.geojson` | 台湾地区限制区域（122 个，去重后） |
 | `uav_zone_highways.geojson` | 台湾地区公路（92 个） |
 | `uav_zone_railways.geojson` | 台湾地区铁路（高铁，46 个） |
@@ -23,6 +23,7 @@ DroneMapTW（<https://dronemap.boggy.tw/>）公开矢量瓦片图层 `uav_zone` 
 | `aip_uas_training.geojson` | AIP ENR 5.2.4 军用 UAS 训练空域（24 个） |
 | `aip_civil_training.geojson` | AIP ENR 5.3 民用训练空域（2 个） |
 | `aip_air_sports.geojson` | AIP ENR 5.5 空中运动空域（31 个） |
+| `hidden_features.geojson` | 已隐藏/待核实要素（基90/基92/苗77，3 个） |
 
 ## 来源与生成方式
 
@@ -97,10 +98,10 @@ DroneMapTW 站点未声明开放数据授权条款，原始资料版权属台湾
 ## 与“台湾地区禁止、限制空域”图层去重
 
 - 原始空域线数据：`geojson/tw_air.geojson`（92 条线，保持原样）
-- 去重结果：`data/tw_air_dedup.geojson`（保留 7 条线）
+- 去重结果：`data/tw_air_dedup.geojson`（保留 1 条未匹配 AIP 的线，默认不勾选）
 - 去重规则：一条空域线的 ≥99% 长度落在禁限航区或 AIP 补全限航区外扩约 50 m 范围内，视为重复并删除
-- 删除明细：`data/tw_air_dedupe_report.json`（80 条）与 `data/tw_air_duplicate_report.json`（后续对 AIP 图层去除的 5 条）
-- 主页面当前使用去重后的 `data/tw_air_dedup.geojson`
+- 删除明细：`data/tw_air_dedupe_report.json` 与 `data/tw_air_duplicate_report.json`
+- 主页面当前使用 `data/tw_air_dedup.geojson`，但该图层默认不勾选
 
 注意：这是近似去重，因为原空域图层是线数据（92 条线中仅 28 条闭合），无法直接做严格的面积包含判断。
 
@@ -123,6 +124,6 @@ DroneMapTW 站点未声明开放数据授权条款，原始资料版权属台湾
 
 - `aip_military_training.geojson`：ENR 5.2.2 军用训练空域 20 个（A1–A5、五空域、四空域 A/B、三空域、二空域东/西、CK/CK1、嘉义、归仁、恒春、花莲、龙潭、新社、左营）
 - `aip_uas_training.geojson`：ENR 5.2.4 军用 UAS 训练空域 24 个（ARMY1–6，以及 NA/NB/NC/ND/NE 系列），含 `aipCode`、`aipName`、上下限、时间、管理单位
-- `aip_civil_training.geojson`：ENR 5.3.1.1 民用训练空域 2 个（南湾、台东纵谷）
-- `aip_air_sports.geojson`：ENR 5.5 空中运动空域 31 个（超轻型载具、热气球、飞行伞），含 `airspaceType`、上下限
+- `aip_civil_training.geojson`：ENR 5.3.1.1 民用训练空域 2 个（南湾、台东纵谷）；默认不勾选
+- `aip_air_sports.geojson`：ENR 5.5 空中运动空域 31 个（超轻型载具、热气球、飞行伞），含 `airspaceType`、上下限；默认不勾选
 - 这三个图层默认不勾选，勾选后才加载

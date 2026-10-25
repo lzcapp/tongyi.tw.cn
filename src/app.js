@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    var APP_VERSION = '2026-10-24-23';
+    var APP_VERSION = '2026-10-24-36';
     console.info('tongyi.tw.cn app version:', APP_VERSION);
 
     var DEFAULT_VIEW = { center: [24, 120.9], zoom: 6 };
@@ -25,7 +25,7 @@
 
     // 全图统一边框宽度
     var BORDER_WEIGHT = 1.5;
-    var BORDER_OPACITY = 0.55;
+    var BORDER_OPACITY = 0.9;
     var FILL_OPACITY = 0.12;
     var LEGEND_FILL_OPACITY = 0.35;
     var LEGEND_LINE_OPACITY = 0.8;
@@ -86,10 +86,11 @@
         },
         {
             id: 'tw_air',
-            name: '台湾地区禁止、限制空域',
+            name: '待确认空域（原始录入）',
             file: './data/tw_air_dedup.geojson',
-            style: lineStyle('#1d4ed8', '6, 6'),
-            legend: lineLegend('台湾地区禁止、限制空域', '#1d4ed8', '6, 6')
+            defaultVisible: false,
+            style: lineStyle('#3b82f6', '6, 6'),
+            legend: lineLegend('待确认空域（原始录入）', '#3b82f6', '6, 6')
         },
         {
             id: 'aip_rcr',
@@ -103,18 +104,18 @@
             id: 'aip_military',
             name: '台湾地区军用训练空域（AIP）',
             file: './data/aip_military_training.geojson',
-            defaultVisible: false,
+            defaultVisible: true,
             canvas: true,
-            style: areaStyle('#312e81', '#1e1b4b'),
+            style: areaStyle('#312e81', '#6366f1'),
             legend: areaLegend('台湾地区军用训练空域（AIP）', '#312e81')
         },
         {
             id: 'aip_uas',
             name: '台湾地区军用UAS训练空域（AIP）',
             file: './data/aip_uas_training.geojson',
-            defaultVisible: false,
+            defaultVisible: true,
             canvas: true,
-            style: areaStyle('#4338ca', '#312e81'),
+            style: areaStyle('#4338ca', '#6366f1'),
             legend: areaLegend('台湾地区军用UAS训练空域（AIP）', '#4338ca')
         },
         {
@@ -122,7 +123,7 @@
             name: '台湾地区民用训练空域（AIP）',
             file: './data/aip_civil_training.geojson',
             defaultVisible: false,
-            style: areaStyle('#0891b2', '#155e75'),
+            style: areaStyle('#0891b2', '#22d3ee'),
             legend: areaLegend('台湾地区民用训练空域（AIP）', '#0891b2')
         },
         {
@@ -130,35 +131,35 @@
             name: '台湾地区空中运动空域（AIP）',
             file: './data/aip_air_sports.geojson',
             defaultVisible: false,
-            style: areaStyle('#0d9488', '#115e59'),
+            style: areaStyle('#0d9488', '#2dd4bf'),
             legend: areaLegend('台湾地区空中运动空域（AIP）', '#0d9488')
         },
         {
             id: '1996',
             name: '1996年3月 · 台湾海峡陆海空三军联合作战演习',
             file: './geojson/1996.geojson',
-            style: areaStyle('#7f1d1d', '#450a0a'),
+            style: areaStyle('#7f1d1d', '#b91c1c'),
             legend: areaLegend('1996年3月 · 台湾海峡陆海空三军联合作战演习', '#7f1d1d')
         },
         {
             id: '2022',
             name: '2022年8月 · 多军兵种联合战备警巡和实战化演练',
             file: './geojson/2022.geojson',
-            style: areaStyle('#991b1b', '#7f1d1d'),
+            style: areaStyle('#991b1b', '#dc2626'),
             legend: areaLegend('2022年8月 · 多军兵种联合战备警巡和实战化演练', '#991b1b')
         },
         {
             id: '202304',
             name: '2023年4月 · 环台岛战备警巡和“联合利剑”演习',
             file: './geojson/202304.geojson',
-            style: areaStyle('#b91c1c', '#991b1b'),
+            style: areaStyle('#b91c1c', '#ef4444'),
             legend: areaLegend('2023年4月/8月 · 环台岛战备警巡、“联合利剑”演习与联合演训', '#b91c1c')
         },
         {
             id: '202308',
             name: '2023年8月 · 海空联合战备警巡和联合演训',
             file: './geojson/202308.geojson',
-            style: areaStyle('#b91c1c', '#991b1b'),
+            style: areaStyle('#b91c1c', '#ef4444'),
             // 与 2023 年 4 月共用图例
             legend: null
         },
@@ -166,14 +167,14 @@
             id: '2024A',
             name: '2024年5月 · “联合利剑—2024A”演习',
             file: './geojson/2024A.geojson',
-            style: areaStyle('#dc2626', '#b91c1c'),
+            style: areaStyle('#dc2626', '#ef4444'),
             legend: areaLegend('2024年5月 · “联合利剑—2024A”演习', '#dc2626')
         },
         {
             id: '2024B',
             name: '2024年10月 · “联合利剑—2024B”演习',
             file: './geojson/2024B.geojson',
-            style: areaStyle('#e11d48', '#be123c'),
+            style: areaStyle('#e11d48', '#e11d48'),
             legend: areaLegend('2024年10月 · “联合利剑—2024B”演习', '#e11d48')
         },
         {
@@ -189,7 +190,7 @@
             file: './data/uav_zone_red.geojson',
             defaultVisible: true,
             canvas: true,
-            style: areaStyle('#1e40af', '#1e3a8a'),
+            style: areaStyle('#1e40af', '#2563eb'),
             legend: areaLegend('台湾地区禁止区域', '#1e40af')
         },
         {
@@ -198,7 +199,7 @@
             file: './data/uav_zone_yellow.geojson',
             defaultVisible: true,
             canvas: true,
-            style: areaStyle('#3b82f6', '#1d4ed8'),
+            style: areaStyle('#3b82f6', '#0284c7'),
             legend: areaLegend('台湾地区限制区域', '#3b82f6')
         },
         {
@@ -207,7 +208,7 @@
             file: './data/uav_zone_highways.geojson',
             defaultVisible: false,
             canvas: true,
-            style: areaStyle('#60a5fa', '#2563eb'),
+            style: areaStyle('#60a5fa', '#3b82f6'),
             legend: areaLegend('台湾地区公路', '#60a5fa')
         },
         {
@@ -216,7 +217,7 @@
             file: './data/uav_zone_railways.geojson',
             defaultVisible: false,
             canvas: true,
-            style: areaStyle('#4f46e5', '#3730a3'),
+            style: areaStyle('#4f46e5', '#6366f1'),
             legend: areaLegend('台湾地区铁路（高铁）', '#4f46e5')
         },
         {
@@ -225,7 +226,7 @@
             file: './data/uav_zone_national_parks.geojson',
             defaultVisible: false,
             canvas: true,
-            style: areaStyle('#0e7490', '#155e75'),
+            style: areaStyle('#0e7490', '#0d9488'),
             legend: areaLegend('台湾地区国家公园', '#0e7490')
         },
         {
@@ -234,11 +235,15 @@
             file: './data/uav_zone_commercial_ports.geojson',
             defaultVisible: false,
             canvas: true,
-            style: areaStyle('#0ea5e9', '#0369a1'),
-            legend: areaLegend('台湾地区商港', '#0ea5e9')
+            style: areaStyle('#0284c7', '#0284c7'),
+            legend: areaLegend('台湾地区商港', '#0284c7')
         }
     ];
 
+    // 不在图层控件/图例/信息面板中展示的隐藏图层
+    var VISIBLE_LAYER_CONFIG = LAYER_CONFIG.filter(function (config) {
+        return !config.hidden;
+    });
 
     // ---------------------------------------------------------------------
     // UI 元素
@@ -311,6 +316,18 @@
     map.setView(initialView.center, initialView.zoom);
     osm.addTo(map);
     map.on('moveend', syncViewToHash);
+
+    // 暗色底图时给叠加层加主题类，提高对比度
+    function isDarkBaseLayer(layer) {
+        return layer === esriDark || layer === amapSatellite;
+    }
+    function updateBaseTheme(layer) {
+        map.getContainer().classList.toggle('map-theme-dark', isDarkBaseLayer(layer));
+    }
+    map.on('baselayerchange', function (event) {
+        updateBaseTheme(event.layer);
+    });
+    updateBaseTheme(osm);
     syncViewToHash();
 
     // ---------------------------------------------------------------------
@@ -320,7 +337,7 @@
     var overlayLayers = {};
     var failedStates = [];
 
-    LAYER_CONFIG.forEach(function (config, index) {
+    VISIBLE_LAYER_CONFIG.forEach(function (config, index) {
         var group = L.layerGroup();
         // 每个图层使用独立 pane 并固定 z-index，保证叠放顺序与配置顺序一致，
         // 不受网络请求完成先后影响。
@@ -347,7 +364,7 @@
     L.control.layers(baseLayers, overlayLayers, { collapsed: true, position: 'topright' }).addTo(map);
 
     // 默认显示图层（禁限航区中的公路/国家公园/商港默认不勾选，勾选后才加载）
-    LAYER_CONFIG.forEach(function (config) {
+    VISIBLE_LAYER_CONFIG.forEach(function (config) {
         if (config.defaultVisible !== false) {
             overlayLayers[config.name].addTo(map);
         }
@@ -410,7 +427,7 @@
     function findLayersAt(latlng) {
         var matches = [];
 
-        LAYER_CONFIG.forEach(function (config) {
+        VISIBLE_LAYER_CONFIG.forEach(function (config) {
             var state = layerState[config.id];
             if (!state.loaded || !state.layer || !map.hasLayer(state.group)) {
                 return;
@@ -674,7 +691,7 @@
             return;
         }
 
-        var loadingCount = LAYER_CONFIG.filter(function (config) {
+        var loadingCount = VISIBLE_LAYER_CONFIG.filter(function (config) {
             return layerState[config.id].loading;
         }).length;
 
@@ -756,6 +773,7 @@
             }
         });
         target.addTo(map);
+        updateBaseTheme(target);
     }
 
     // ---------------------------------------------------------------------
@@ -778,7 +796,7 @@
     }
 
     var legendItems = [];
-    LAYER_CONFIG.forEach(function (config) {
+    VISIBLE_LAYER_CONFIG.forEach(function (config) {
         if (!config.legend) {
             return;
         }

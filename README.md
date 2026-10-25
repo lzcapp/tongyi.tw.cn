@@ -11,7 +11,7 @@
 ## 功能
 
 - **底图切换**：OpenStreetMap（默认）、Esri 暗色、高德地图、高德卫星影像；通过右上角图层控件切换，底图署名由 Leaflet 版权控件按提供方显示。
-- **9 个专题图层 + 6 个禁限航区图层 + 5 个 AIP 专题图层**：台湾地区防空识别区（ADIZ）、禁止限制空域、1996 年以来历次台海演习区域，以及台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类禁限航区（线状边界数据不纳入）；右上角图层控件可单独勾选/取消。禁止区域、限制区域默认勾选；公路、铁路（高铁）、国家公园、商港默认不勾选，勾选后才加载。全图边框统一 1.5 px；台湾地区相关区域使用蓝色系，军事演习区域使用红色系。
+- **9 个专题图层 + 6 个禁限航区图层 + 5 个 AIP 图层**：台湾地区防空识别区（ADIZ）、禁止限制空域、1996 年以来历次台海演习区域，以及台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类禁限航区（线状边界数据不纳入）；右上角图层控件可单独勾选/取消。禁止区域、限制区域默认勾选；公路、铁路（高铁）、国家公园、商港默认不勾选，勾选后才加载。全图边框统一 1.5 px；台湾地区相关区域使用蓝色系，军事演习区域使用红色系。
 - **按需加载与稳定叠放**：图层首次勾选时才 `fetch` 对应 GeoJSON（取消勾选后数据保留在内存中）；每个图层使用独立 pane 并固定 z-index，叠放顺序不随请求完成先后变化。
 - **图层信息面板**：点击地图上任意位置后，左下角列出该点覆盖的**所有图层**（多个图层重叠时同时显示，并标注数量）；有 `name` / `date` / `agency` / `activity` 属性的要素会附带显示这些字段。面状区域（含闭合的空域边界）按区域命中，开放线状要素按边界容差命中。点击空白处、按 `Esc` 或点关闭按钮收起。
 - **图例控件**：左上角可折叠图例（基于 Leaflet.Legend），颜色与专题图层样式对应。
@@ -49,7 +49,7 @@ tongyi.tw.cn/
 ├── geojson/                      # 24 个 GeoJSON 数据文件（详见「数据说明」）
 ├── data/
 │   ├── uav_zone_tw_restrictions.geojson   # 禁限航区（DroneMapTW 导出）
-│   ├── tw_air_dedup.geojson               # 禁限空域去重后的 12 条边界线
+│   ├── tw_air_dedup.geojson               # 待确认空域（原始录入，1 条未匹配 AIP 的线）
 │   ├── aip_rcr_missing.geojson             # AIP ENR 5.1 补全的 5 个限航区
 │   ├── aip_military_training.geojson        # AIP ENR 5.2.2 军用训练空域
 │   ├── aip_uas_training.geojson            # AIP ENR 5.2.4 军用 UAS 训练空域
@@ -81,7 +81,7 @@ python3 -m http.server 8080
 | 文件 | 图层名称 |
 | --- | --- |
 | `geojson/adiz.geojson` | 台湾地区防空识别区（ADIZ） |
-| `data/tw_air_dedup.geojson` | 台湾地区禁止、限制空域（与禁限航区、AIP 补全限航区去重后保留 7 条线；原 `geojson/tw_air.geojson` 的 92 条仍保留） |
+| `data/tw_air_dedup.geojson` | 待确认空域（原始录入，1 条未匹配 AIP 的线；默认不勾选） |
 | `geojson/1996.geojson` | 1996 年 3 月 · 台湾海峡陆海空三军联合作战演习 |
 | `geojson/2022.geojson` | 2022 年 8 月 · 多军兵种联合战备警巡和实战化演练 |
 | `geojson/202304.geojson` | 2023 年 4 月 · 环台岛战备警巡和“联合利剑”演习 |
@@ -89,15 +89,18 @@ python3 -m http.server 8080
 | `geojson/2024A.geojson` | 2024 年 5 月 · “联合利剑—2024A”演习 |
 | `geojson/2024B.geojson` | 2024 年 10 月 · “联合利剑—2024B”演习 |
 | `geojson/2025B.geojson` | 2025 年 12 月 · “正义使命—2025”演习 |
-| `data/uav_zone_red.geojson` | 台湾地区禁止区域（4,756 个，不含公路、铁路） |
+| `data/uav_zone_red.geojson` | 台湾地区禁止区域（4,753 个，不含公路、铁路；基90/基92/苗77 已隐藏，见已知问题） |
 | `data/uav_zone_yellow.geojson` | 台湾地区限制区域（122 个） |
 | `data/uav_zone_highways.geojson` | 台湾地区公路（92 个，默认不勾选） |
 | `data/uav_zone_railways.geojson` | 台湾地区铁路（高铁，46 个，默认不勾选） |
 | `data/uav_zone_national_parks.geojson` | 台湾地区国家公园（66 个，默认不勾选） |
 | `data/uav_zone_commercial_ports.geojson` | 台湾地区商港（30 个，默认不勾选） |
+| `data/hidden_features.geojson` | 已隐藏/待核实要素（基90/基92/苗77，3 个） |
+
+已知问题记录见 [`data/known_issues.md`](data/known_issues.md)。
 | `data/aip_rcr_missing.geojson` | AIP ENR 5.1 补全限航区（5 个，默认勾选） |
-| `data/aip_military_training.geojson` | AIP ENR 5.2.2 军用训练空域（20 个，默认不勾选） |
-| `data/aip_uas_training.geojson` | AIP ENR 5.2.4 军用 UAS 训练空域（24 个，默认不勾选） |
+| `data/aip_military_training.geojson` | AIP ENR 5.2.2 军用训练空域（20 个，默认显示） |
+| `data/aip_uas_training.geojson` | AIP ENR 5.2.4 军用 UAS 训练空域（24 个，默认显示） |
 | `data/aip_civil_training.geojson` | AIP ENR 5.3 民用训练空域（2 个，默认不勾选） |
 | `data/aip_air_sports.geojson` | AIP ENR 5.5 空中运动空域（31 个，默认不勾选） |
 
@@ -197,7 +200,7 @@ npx --yes html-validate@9 index.html
 - GeoJSON 顶层结构不统一（`Feature` 与 `FeatureCollection` 混用），依赖读取方兼容。
 - 底图依赖第三方瓦片服务（OpenStreetMap、Esri、高德），其可用性、精度、配额与使用条款由第三方决定，离线环境下底图不可用。天地图仅在 `src/leaflet.ChineseTmsProviders.js` 中提供接入方式，默认未启用（需自行申请 `tk` 密钥）。
 - 禁限航区数据来自 DroneMapTW 公开瓦片导出，DroneMapTW 未声明开放数据授权、原始资料版权属台湾地区民航主管部门；公开部署/再分发前请先确认授权并署名。按要求不纳入线状边界数据；公开瓦片中另有 11 个源要素缺失。主页面按台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类拆分加载；台湾地区公路、铁路（高铁）、国家公园、商港默认不勾选。
-- 「台湾地区禁止、限制空域」是线数据（92 条线，仅 28 条闭合），无法与禁限航区多边形做严格几何去重。当前 `data/tw_air_dedup.geojson` 采用近似去重：一条空域线 ≥99% 的长度落在禁限航区外扩约 50 m 范围内，即视为重复并删除；先按禁限航区去重删除 80 条，再按 AIP 补全限航区去除 5 条重复线，最终保留 7 条。原始 `geojson/tw_air.geojson` 未修改。
+- 「台湾地区禁止、限制空域」是线数据（92 条线，仅 28 条闭合），无法与禁限航区多边形做严格几何去重。当前 `data/tw_air_dedup.geojson` 采用近似去重：一条空域线 ≥99% 的长度落在禁限航区外扩约 50 m 范围内，即视为重复并删除；先按禁限航区去重，再与 AIP 图层去重；RCR5/9/11/12/25/42 的手工线已删除并用于校正对应 RCR 几何；最终仅保留 1 条未匹配 AIP 的线（疑似龙门/核四周边），默认不勾选。原始 `geojson/tw_air.geojson` 未修改。
 - 坐标纠偏为经验算法，国内偏移底图与 WGS-84 数据之间可能存在残余偏移。
 - 无构建流程与自动化测试框架，仅有静态校验（GeoJSON + HTML）。
 - 项目未声明浏览器兼容范围；Leaflet 1.9 支持现代浏览器。

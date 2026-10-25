@@ -401,3 +401,12 @@ body {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ---------- 暗色底图下的叠加层适配 ---------- */
+/*
+ * 自定义图层 pane 的 class 形如 leaflet-layer-<id>-pane。
+ * 暗色底图上提高叠加层的亮度和饱和度，亮色底图保持原色。
+ */
+.map-theme-dark .leaflet-pane[class*="leaflet-layer-"] {
+    filter: brightness(1.3) saturate(1.12);
+}

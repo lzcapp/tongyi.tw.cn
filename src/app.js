@@ -8,7 +8,7 @@
 (function () {
     'use strict';
 
-    var APP_VERSION = '2026-10-24-18';
+    var APP_VERSION = '2026-10-24-22';
     console.info('tongyi.tw.cn app version:', APP_VERSION);
 
     var DEFAULT_VIEW = { center: [24, 120.9], zoom: 6 };
@@ -90,6 +90,48 @@
             file: './data/tw_air_dedup.geojson',
             style: lineStyle('#1d4ed8', '6, 6'),
             legend: lineLegend('台湾地区禁止、限制空域', '#1d4ed8', '6, 6')
+        },
+        {
+            id: 'aip_rcr',
+            name: '台湾地区限航区（AIP 补全）',
+            file: './data/aip_rcr_missing.geojson',
+            defaultVisible: true,
+            style: areaStyle('#1d4ed8', '#1e3a8a'),
+            legend: areaLegend('台湾地区限航区（AIP 补全）', '#1d4ed8')
+        },
+        {
+            id: 'aip_military',
+            name: '台湾地区军用训练空域（AIP）',
+            file: './data/aip_military_training.geojson',
+            defaultVisible: false,
+            canvas: true,
+            style: areaStyle('#312e81', '#1e1b4b'),
+            legend: areaLegend('台湾地区军用训练空域（AIP）', '#312e81')
+        },
+        {
+            id: 'aip_uas',
+            name: '台湾地区军用UAS训练空域（AIP）',
+            file: './data/aip_uas_training.geojson',
+            defaultVisible: false,
+            canvas: true,
+            style: areaStyle('#4338ca', '#312e81'),
+            legend: areaLegend('台湾地区军用UAS训练空域（AIP）', '#4338ca')
+        },
+        {
+            id: 'aip_civil',
+            name: '台湾地区民用训练空域（AIP）',
+            file: './data/aip_civil_training.geojson',
+            defaultVisible: false,
+            style: areaStyle('#0891b2', '#155e75'),
+            legend: areaLegend('台湾地区民用训练空域（AIP）', '#0891b2')
+        },
+        {
+            id: 'aip_air_sports',
+            name: '台湾地区空中运动空域（AIP）',
+            file: './data/aip_air_sports.geojson',
+            defaultVisible: false,
+            style: areaStyle('#0d9488', '#115e59'),
+            legend: areaLegend('台湾地区空中运动空域（AIP）', '#0d9488')
         },
         {
             id: '1996',
@@ -517,7 +559,7 @@
             details.push(value);
         }
 
-        ['name', 'zoneName', 'date', 'agency', 'activity', 'agencyName'].forEach(function (key) {
+        ['name', 'zoneName', 'aipName', 'aipLimits', 'aipTime', 'airspaceType', 'date', 'agency', 'activity', 'agencyName'].forEach(function (key) {
             addDetail(properties[key]);
         });
 

@@ -18,6 +18,11 @@ DroneMapTW（<https://dronemap.boggy.tw/>）公开矢量瓦片图层 `uav_zone` 
 | `uav_zone_railways.geojson` | 台湾地区铁路（高铁，46 个） |
 | `uav_zone_national_parks.geojson` | 台湾地区国家公园（66 个） |
 | `uav_zone_commercial_ports.geojson` | 台湾地区商港（30 个） |
+| `aip_rcr_missing.geojson` | AIP ENR 5.1 补全限航区（RCR8/17/18A/18B/43，5 个） |
+| `aip_military_training.geojson` | AIP ENR 5.2.2 军用训练空域（20 个） |
+| `aip_uas_training.geojson` | AIP ENR 5.2.4 军用 UAS 训练空域（24 个） |
+| `aip_civil_training.geojson` | AIP ENR 5.3 民用训练空域（2 个） |
+| `aip_air_sports.geojson` | AIP ENR 5.5 空中运动空域（31 个） |
 
 ## 来源与生成方式
 
@@ -104,4 +109,20 @@ DroneMapTW 站点未声明开放数据授权条款，原始资料版权属台湾
 - 属性中的中文（区域名称、机关名称、说明、罚则、联系方式等）已统一转为简体中文。
 - 主要交通机构按大陆官方表述做了统一，例如「台湾地区民航主管部门」「台湾地区铁路主管部门」「台湾地区公路主管部门」。
 - 原始英文、邮箱、电话、网址保持不变。
+- 「施放」按语义拆分：涉及无人机的改为「无人机飞行」或「飞行」，涉及有碍飞航安全物体的改为「升放」。
 - 台湾地区地方机构名统一为「台“XX”」形式，例如：高雄市政府 → 台“高雄市”，苗栗县警察局 → 台“苗栗县”警察局，桃园市桃园区公所 → 台“桃园市桃园区”。
+
+## AIP ENR 5.1 限航区补全
+
+- 数据源：`RC-ENR 5.1.pdf`（AIP ENR 5.1 禁航区、限航区及危险区）
+- 当前无人机数据中有 22 个 RCR，缺 RCR8、RCR17、RCR18A、RCR18B、RCR43
+- `aip_rcr_missing.geojson` 按 AIP 坐标补全这 5 个限航区，包含 `aipCode`、`aipName`、`aipUpperLimit`、`aipLowerLimit`、`aipTime`、`aipSource` 字段
+- 现有 RCR 要素也补了 `aipCode`、`aipName`、`aipUpperLimit`、`aipLowerLimit`、`aipLimits`、`aipTime`、`aipAuthority`、`aipDroneClause`、`aipSource` 字段，信息来自 AIP ENR 5.1
+
+## AIP ENR 5.2 / 5.3 / 5.5 专题图层
+
+- `aip_military_training.geojson`：ENR 5.2.2 军用训练空域 20 个（A1–A5、五空域、四空域 A/B、三空域、二空域东/西、CK/CK1、嘉义、归仁、恒春、花莲、龙潭、新社、左营）
+- `aip_uas_training.geojson`：ENR 5.2.4 军用 UAS 训练空域 24 个（ARMY1–6，以及 NA/NB/NC/ND/NE 系列），含 `aipCode`、`aipName`、上下限、时间、管理单位
+- `aip_civil_training.geojson`：ENR 5.3.1.1 民用训练空域 2 个（南湾、台东纵谷）
+- `aip_air_sports.geojson`：ENR 5.5 空中运动空域 31 个（超轻型载具、热气球、飞行伞），含 `airspaceType`、上下限
+- 这三个图层默认不勾选，勾选后才加载

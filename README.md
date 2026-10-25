@@ -11,7 +11,7 @@
 ## 功能
 
 - **底图切换**：OpenStreetMap（默认）、Esri 暗色、高德地图、高德卫星影像；通过右上角图层控件切换，底图署名由 Leaflet 版权控件按提供方显示。
-- **9 个专题图层 + 6 个禁限航区图层**：台湾地区防空识别区（ADIZ）、禁止限制空域、1996 年以来历次台海演习区域，以及台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类禁限航区（线状边界数据不纳入）；右上角图层控件可单独勾选/取消。禁止区域、限制区域默认勾选；公路、铁路（高铁）、国家公园、商港默认不勾选，勾选后才加载。全图边框统一 1.5 px；台湾地区相关区域使用蓝色系，军事演习区域使用红色系。
+- **9 个专题图层 + 6 个禁限航区图层 + 5 个 AIP 专题图层**：台湾地区防空识别区（ADIZ）、禁止限制空域、1996 年以来历次台海演习区域，以及台湾地区的禁止区域、限制区域、公路、铁路（高铁）、国家公园、商港六类禁限航区（线状边界数据不纳入）；右上角图层控件可单独勾选/取消。禁止区域、限制区域默认勾选；公路、铁路（高铁）、国家公园、商港默认不勾选，勾选后才加载。全图边框统一 1.5 px；台湾地区相关区域使用蓝色系，军事演习区域使用红色系。
 - **按需加载与稳定叠放**：图层首次勾选时才 `fetch` 对应 GeoJSON（取消勾选后数据保留在内存中）；每个图层使用独立 pane 并固定 z-index，叠放顺序不随请求完成先后变化。
 - **图层信息面板**：点击地图上任意位置后，左下角列出该点覆盖的**所有图层**（多个图层重叠时同时显示，并标注数量）；有 `name` / `date` / `agency` / `activity` 属性的要素会附带显示这些字段。面状区域（含闭合的空域边界）按区域命中，开放线状要素按边界容差命中。点击空白处、按 `Esc` 或点关闭按钮收起。
 - **图例控件**：左上角可折叠图例（基于 Leaflet.Legend），颜色与专题图层样式对应。
@@ -49,7 +49,12 @@ tongyi.tw.cn/
 ├── geojson/                      # 24 个 GeoJSON 数据文件（详见「数据说明」）
 ├── data/
 │   ├── uav_zone_tw_restrictions.geojson   # 禁限航区（DroneMapTW 导出）
-│   └── tw_air_dedup.geojson               # 禁限空域去重后的 12 条边界线
+│   ├── tw_air_dedup.geojson               # 禁限空域去重后的 12 条边界线
+│   ├── aip_rcr_missing.geojson             # AIP ENR 5.1 补全的 5 个限航区
+│   ├── aip_military_training.geojson        # AIP ENR 5.2.2 军用训练空域
+│   ├── aip_uas_training.geojson            # AIP ENR 5.2.4 军用 UAS 训练空域
+│   ├── aip_civil_training.geojson          # AIP ENR 5.3 民用训练空域
+│   └── aip_air_sports.geojson              # AIP ENR 5.5 空中运动空域
 └── scripts/
     ├── normalize-geojson.py      # 闭合未闭合的线性环（幂等，支持 --check）
     └── validate-geojson.py       # 数据校验脚本（CI 使用）
@@ -90,6 +95,11 @@ python3 -m http.server 8080
 | `data/uav_zone_railways.geojson` | 台湾地区铁路（高铁，46 个，默认不勾选） |
 | `data/uav_zone_national_parks.geojson` | 台湾地区国家公园（66 个，默认不勾选） |
 | `data/uav_zone_commercial_ports.geojson` | 台湾地区商港（30 个，默认不勾选） |
+| `data/aip_rcr_missing.geojson` | AIP ENR 5.1 补全限航区（5 个，默认勾选） |
+| `data/aip_military_training.geojson` | AIP ENR 5.2.2 军用训练空域（20 个，默认不勾选） |
+| `data/aip_uas_training.geojson` | AIP ENR 5.2.4 军用 UAS 训练空域（24 个，默认不勾选） |
+| `data/aip_civil_training.geojson` | AIP ENR 5.3 民用训练空域（2 个，默认不勾选） |
+| `data/aip_air_sports.geojson` | AIP ENR 5.5 空中运动空域（31 个，默认不勾选） |
 
 ### 预留 / 暂未渲染的 15 个图层
 
